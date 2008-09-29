@@ -1,0 +1,14 @@
+## Interface: 20400
+## Title: Integrated PopBar (v2.03)
+## Notes: An extra set of 11x3 buttons, integrated into the default action bar.
+## Author: Xinhuan
+## OptionalDeps: Ace3
+## SavedVariablesPerCharacter: IPopBar_Config
+## X-eMail: xinhuan @ gmail DOT com
+## X-Category: Action Bars
+## X-License: GPL v2
+
+embeds.xml
+Locales.xml
+
+IPopBar.lua
