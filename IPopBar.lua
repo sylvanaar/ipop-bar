@@ -111,7 +111,7 @@ local IPopBarFrameBar = CreateFrame("Frame", nil, MainMenuBar)
 IPopBarFrameBar:SetMovable(nil)
 IPopBarFrameBar:SetPoint("TOPLEFT", 556, 0)
 IPopBarFrameBar:SetPoint("BOTTOMRIGHT")
-IPopBarFrameBar.bg1 = IPopBarFrameBar:CreateTexture(nil, "ARTWORK")
+--[[IPopBarFrameBar.bg1 = IPopBarFrameBar:CreateTexture(nil, "ARTWORK")
 IPopBarFrameBar.bg1:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
 IPopBarFrameBar.bg1:SetWidth(252)
 IPopBarFrameBar.bg1:SetHeight(43)
@@ -122,13 +122,13 @@ IPopBarFrameBar.bg2:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
 IPopBarFrameBar.bg2:SetWidth(214)
 IPopBarFrameBar.bg2:SetHeight(43)
 IPopBarFrameBar.bg2:SetPoint("BOTTOMLEFT", 252, 0)
-IPopBarFrameBar.bg2:SetTexCoord(0.1640625, 1.0, 0.58203125, 0.75)
+IPopBarFrameBar.bg2:SetTexCoord(0.1640625, 1.0, 0.58203125, 0.75)]]
 
 -- The frame to show when in Bag mode, just more textures
 local IPopBarFrameBag = CreateFrame("Frame", nil, MainMenuBar)
 IPopBarFrameBag:SetMovable(nil)
 IPopBarFrameBag:SetAllPoints(MainMenuBar)
-IPopBarFrameBag.t3a = IPopBarFrameBag:CreateTexture(nil, "ARTWORK")
+--[[IPopBarFrameBag.t3a = IPopBarFrameBag:CreateTexture(nil, "ARTWORK")
 IPopBarFrameBag.t3a:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
 IPopBarFrameBag.t3a:SetWidth(237)
 IPopBarFrameBag.t3a:SetHeight(43)
@@ -139,7 +139,7 @@ IPopBarFrameBag.t3b:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
 IPopBarFrameBag.t3b:SetWidth(231)
 IPopBarFrameBag.t3b:SetHeight(43)
 IPopBarFrameBag.t3b:SetPoint("BOTTOM", 396, 0)
-IPopBarFrameBag.t3b:SetTexCoord(0.09765625, 1.0, 0.08203125, 0.25)
+IPopBarFrameBag.t3b:SetTexCoord(0.09765625, 1.0, 0.08203125, 0.25)]]
 
 -- Function to create one of our buttons
 local function CreateIPopBarButton(num)
@@ -173,45 +173,26 @@ for i = 2, 11 do
 	row3[i]:SetPoint("LEFT", row3[i-1], "RIGHT", 6, 0)
 end
 
--- Create secure anchor frame to parent our buttons to
--- Most of this stateheader code is from "Mairelon's Action Bars and State Headers"
--- tutorial at http://forums.worldofwarcraft.com/thread.html?topicId=2968230859&sid=1
-local anchor = CreateFrame("Frame", nil, MainMenuBar, "SecureAnchorEnterTemplate")
+-- Create our secure anchor that controls all our buttons
+local anchor = CreateFrame("Button", nil, MainMenuBar, "SecureHandlerEnterLeaveTemplate")
 anchor:SetAllPoints(IPopBarFrameBar)
-
--- Set anchor to raise all events to it's children
-anchor:SetAttribute("*childraise-OnEnter", true)
--- Tell it what value to set the statemap-anchor to
--- one value for OnEnter, one OnLeave.  Note that the suffixes are already
--- defined.  Instead of sending the button pressed as the other templates do,
--- AnchorEnter sends a button of "OnLeave" and a button of "OnEnter" for those
--- occurences.
-anchor:SetAttribute("*childstate-OnEnter", "enter")
-anchor:SetAttribute("*childstate-OnLeave", "leave")
-
-local hdr = CreateFrame("Frame", nil, anchor, "SecureStateHeaderTemplate")
-hdr:SetPoint("CENTER"); hdr:SetWidth(2); hdr:SetHeight(2)
--- Give it a statemap for the event sent from the anchor
-hdr:SetAttribute("statemap-anchor-enter", ";")
-hdr:SetAttribute("statemap-anchor-leave", ";") -- a nonempty statemap.  to work with the delay
--- when the bar appears, the cursor will suddenly be over the buttons, not the anchor.  So, we
--- need to tell it to not change state back as long as the mouse is hovering (and a 1 second delay on
--- hiding it when the mouse does leave).
-hdr:SetAttribute("delaystatemap-anchor-leave", "1:0")
-hdr:SetAttribute("delaytimemap-anchor-leave",  "1:0.2")
-hdr:SetAttribute("delayhovermap-anchor-leave", "1:true")
-
-hdr:SetAttribute("delaystatemap-anchor-enter", "0:1")
-hdr:SetAttribute("delaytimemap-anchor-enter",  "0:0.2")
--- and add it to the anchor
-anchor:SetAttribute("anchorchild", hdr)
-
--- Add all the buttons to the header, and set the initial anchor state to 0
 for i = 1, 33 do
-	hdr:SetAttribute("addchild", allB[i])
+     allB[i]:SetParent(anchor)
 end
-anchor:SetAttribute("state", 0)
-hdr:SetAttribute("state", 0)
+anchor:Execute( [[Buttons = table.new(self:GetChildren())]] )
+anchor:Execute( [[HideAll = "if not self:IsUnderMouse(true) then for i = 12, 33 do Buttons[i]:Hide() end end"]] )
+anchor:SetAttribute("_onenter", [[ for i = 12, 33 do Buttons[i]:Show() end ]])
+anchor:SetAttribute("_onleave", [[ control:SetTimer(0.2, nil, HideAll) ]] )
+for i = 1, 33 do
+	SecureHandlerWrapScript(allB[i], "OnEnter", anchor, [[
+		for i = 12, 33 do
+			Buttons[i]:Show()
+		end
+	]])
+end
+for i = 1, 33 do
+	SecureHandlerWrapScript(allB[i], "OnLeave", anchor, [[ control:SetTimer(0.2, nil, HideAll) ]] )
+end
 
 
 ---------------------------------------------------------------------------
@@ -220,8 +201,8 @@ hdr:SetAttribute("state", 0)
 -- Move some of the default elements
 MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", MainMenuBarBackpackButton:GetParent(), "BOTTOMRIGHT", -6, 4)
 CharacterMicroButton:SetPoint("BOTTOMLEFT", CharacterMicroButton:GetParent(), "BOTTOMLEFT", 568, 2)
-MainMenuBarPerformanceBarFrame:SetPoint("BOTTOMRIGHT", MainMenuBarPerformanceBarFrame:GetParent(), "BOTTOMRIGHT", -468, -10)
-MainMenuBarPageNumber:SetPoint("CENTER", MainMenuBarPerformanceBarFrameButton, "CENTER", -3, 0)
+--MainMenuBarPerformanceBarFrame:SetPoint("BOTTOMRIGHT", MainMenuBarPerformanceBarFrame:GetParent(), "BOTTOMRIGHT", -468, -10)
+--MainMenuBarPageNumber:SetPoint("CENTER", MainMenuBarPerformanceBarFrameButton, "CENTER", -3, 0)
 
 -- Hide some of the default elements
 MainMenuBarTexture2:Hide()
@@ -237,7 +218,7 @@ for i = 1, 33 do
 	_G[allB[i]:GetName().."Cooldown"]:SetFrameLevel(allB[i]:GetFrameLevel())
 end
 
--- Add stuff to the latency display button
+--[[ Add stuff to the latency display button
 MainMenuBarPerformanceBarFrameButton:SetScript("OnClick", function()
 	IPopBar:ShowBars(1 - db.Enabled)
 end)
@@ -249,7 +230,7 @@ hooksecurefunc("MainMenuBarPerformanceBarFrame_OnEnter", function()
 	GameTooltip:AddLine("\n")
 	GameTooltip:AddLine(L["Click to toggle IPopBar."], 1.0, 0.8, 0, 1)
 	GameTooltip:Show()
-end)
+end)]]
 
 -- Hook Functions
 hooksecurefunc("TalentMicroButton_OnEvent", function()
@@ -324,13 +305,13 @@ end)
 
 function IPopBar:ShowRow2()
 	if not InCombatLockdown() then
-		hdr:SetAttribute("state", 1)
+		--hdr:SetAttribute("state", 1)
 	end
 end
 
 function IPopBar:HideRow2()
 	if IPopbar_Hovering == 0 and not InCombatLockdown() then
-		hdr:SetAttribute("state", 0)
+		--hdr:SetAttribute("state", 0)
 	end
 end
 
@@ -419,8 +400,8 @@ local function IPopBar_Initialize(self, event, arg1)
 		MultiBarLeft:SetFrameStrata("LOW")
 
 		-- Set the time in/out on the popbars
-		hdr:SetAttribute("delaytimemap-anchor-enter",  "0:"..db.TimeOut)
-		hdr:SetAttribute("delaytimemap-anchor-leave",  "1:"..db.TimeIn)
+		--hdr:SetAttribute("delaytimemap-anchor-enter",  "0:"..db.TimeOut)
+		--hdr:SetAttribute("delaytimemap-anchor-leave",  "1:"..db.TimeIn)
 
 		IPopBarFrame:UnregisterEvent("ADDON_LOADED")
 		IPopBarFrame:SetScript("OnEvent", nil)
@@ -455,7 +436,9 @@ function IPopBar:ShowBars(toggle)
 		anchor:Show()
 		TalentMicroButton:Hide()
 		KeyRingButton:Hide()
-	else 
+		AchievementMicroButton:Hide()
+		PVPMicroButton:Hide()
+	else
 		db.Enabled = 0
 		IPopBarFrameBar:Hide()
 		anchor:Hide()
@@ -474,6 +457,8 @@ function IPopBar:ShowBars(toggle)
 		CharacterBag3Slot:Show()
 		UpdateTalentButton()
 		MainMenuBar_UpdateKeyRing()
+		AchievementMicroButton:Show()
+		PVPMicroButton:Show()
 	end
 end
 
@@ -600,7 +585,7 @@ local function IPopBar_Help(msg, quietmode)
 		local t = tonumber(string.match(msg, "^appear ([0-9.]+)$"))
 		if t and t >= 0 and t <= 5 then
 			db.TimeIn = t
-			hdr:SetAttribute("delaytimemap-anchor-enter",  "0:"..tostring(t))
+			--hdr:SetAttribute("delaytimemap-anchor-enter",  "0:"..tostring(t))
 		else
 			DEFAULT_CHAT_FRAME:AddMessage(L["Invalid time specified. It must be between 0 and 5.0."])
 		end
@@ -613,7 +598,7 @@ local function IPopBar_Help(msg, quietmode)
 		local t = tonumber(string.match(msg, "^disappear ([0-9.]+)$"))
 		if t and t >= 0 and t <= 5 then
 			db.TimeOut = t
-			hdr:SetAttribute("delaytimemap-anchor-leave",  "1:"..tostring(t))
+			--hdr:SetAttribute("delaytimemap-anchor-leave",  "1:"..tostring(t))
 		else
 			DEFAULT_CHAT_FRAME:AddMessage(L["Invalid time specified. It must be between 0 and 5.0."])
 		end
