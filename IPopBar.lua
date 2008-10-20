@@ -1,5 +1,6 @@
 --[[
-	Integrated PopBar v2.03 (17th May 2008 for v2.4.2.8278)
+	Integrated PopBar v3.00 (20th October 2008)
+	For Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -13,11 +14,11 @@ local L = IPopBar_Localization
 
 -- Setup the text displayed in the keybindings
 BINDING_HEADER_IPopBar			= L["IPopBar Buttons"]
-BINDING_NAME_TOGGLEIPOPBAR		= L["Toggle Menu Bar/IPopBar"]
 for i = 0, 32 do
 	local row, col = floor(i/11)+1, i%11+1
 	_G[("BINDING_NAME_CLICK IPopBarButton%d:LeftButton"):format(i+1)] = L["IPopBar Button %d/%d"]:format(row, col)
 end
+_G["BINDING_NAME_CLICK IPopBarToggleButton:LeftButton"] = L["Toggle Menu Bar/IPopBar"]
 
 -- Our database defaults
 local db
@@ -30,6 +31,7 @@ local defaults = {
 	ShowEndCaps      = true,
 	TimeIn           = 0.2,
 	TimeOut          = 0.2,
+	Version          = 3.00,
 }
 local defaultStartIDs = {
 	WARRIOR = {
@@ -65,10 +67,7 @@ local InCombatLockdown = InCombatLockdown
 local allB, row1, row2, row3 = {}, {}, {}, {}
 
 -- These are variables used by IPopBar
-local IPopbar_Hovering      = 1
-local IPopBar_LastUpdate    = 0
 local IPopBar_ModeBeforeCombat = false
-local IPOPBAR_UPDATETIME    = 0.1
 
 
 ---------------------------------------------------------------------------
@@ -90,63 +89,51 @@ end
 -- Frame, button and texture creation
 
 -- Just a frame with some textures to be shown all the time
-local IPopBarFrame = CreateFrame("Frame", nil, MainMenuBar)
+-- This is also our main addon frame that listens to events
+local IPopBarFrame = CreateFrame("Frame", "IPopBarFrame", MainMenuBar)
 IPopBarFrame:SetMovable(nil)
 IPopBarFrame:SetAllPoints(MainMenuBar)
 IPopBarFrame.t2a = IPopBarFrame:CreateTexture(nil, "OVERLAY")
 IPopBarFrame.t2a:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
-IPopBarFrame.t2a:SetWidth(18)
+IPopBarFrame.t2a:SetWidth(38)
 IPopBarFrame.t2a:SetHeight(43)
-IPopBarFrame.t2a:SetPoint("BOTTOM", 9, 0)
-IPopBarFrame.t2a:SetTexCoord(0, 0.0703125, 0.33203125, 0.5)
-IPopBarFrame.t2b = IPopBarFrame:CreateTexture(nil, "OVERLAY")
-IPopBarFrame.t2b:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
-IPopBarFrame.t2b:SetWidth(31)
-IPopBarFrame.t2b:SetHeight(43)
-IPopBarFrame.t2b:SetPoint("BOTTOM", 31, 0)
-IPopBarFrame.t2b:SetTexCoord(0, 0.12109375, 0.08203125, 0.25)
+IPopBarFrame.t2a:SetPoint("BOTTOM", 19, 0)
+IPopBarFrame.t2a:SetTexCoord(0, 0.1484375, 0.33203125, 0.5)
 
--- The frame to show when in Bar mode, just more textures
-local IPopBarFrameBar = CreateFrame("Frame", nil, MainMenuBar)
+-- The frame to show when in Bar mode.
+-- It's also our secure header that controls all our buttons
+local IPopBarFrameBar = CreateFrame("Button", "IPopBarFrameBar", MainMenuBar, "SecureHandlerEnterLeaveTemplate, SecureHandlerShowHideTemplate")
 IPopBarFrameBar:SetMovable(nil)
 IPopBarFrameBar:SetPoint("TOPLEFT", 556, 0)
 IPopBarFrameBar:SetPoint("BOTTOMRIGHT")
---[[IPopBarFrameBar.bg1 = IPopBarFrameBar:CreateTexture(nil, "ARTWORK")
-IPopBarFrameBar.bg1:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
+IPopBarFrameBar.bg1 = IPopBarFrameBar:CreateTexture(nil, "ARTWORK")
+IPopBarFrameBar.bg1:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-NightElf")
 IPopBarFrameBar.bg1:SetWidth(252)
 IPopBarFrameBar.bg1:SetHeight(43)
 IPopBarFrameBar.bg1:SetPoint("BOTTOMLEFT")
 IPopBarFrameBar.bg1:SetTexCoord(0.015625, 1.0, 0.83203125, 1.0)
 IPopBarFrameBar.bg2 = IPopBarFrameBar:CreateTexture(nil, "ARTWORK")
-IPopBarFrameBar.bg2:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
+IPopBarFrameBar.bg2:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-NightElf")
 IPopBarFrameBar.bg2:SetWidth(214)
 IPopBarFrameBar.bg2:SetHeight(43)
 IPopBarFrameBar.bg2:SetPoint("BOTTOMLEFT", 252, 0)
-IPopBarFrameBar.bg2:SetTexCoord(0.1640625, 1.0, 0.58203125, 0.75)]]
-
--- The frame to show when in Bag mode, just more textures
-local IPopBarFrameBag = CreateFrame("Frame", nil, MainMenuBar)
-IPopBarFrameBag:SetMovable(nil)
-IPopBarFrameBag:SetAllPoints(MainMenuBar)
---[[IPopBarFrameBag.t3a = IPopBarFrameBag:CreateTexture(nil, "ARTWORK")
-IPopBarFrameBag.t3a:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
-IPopBarFrameBag.t3a:SetWidth(237)
-IPopBarFrameBag.t3a:SetHeight(43)
-IPopBarFrameBag.t3a:SetPoint("BOTTOM", 163, 0)
-IPopBarFrameBag.t3a:SetTexCoord(0.11328125, 1.0, 0.33203125, 0.5)
-IPopBarFrameBag.t3b = IPopBarFrameBag:CreateTexture(nil, "ARTWORK")
-IPopBarFrameBag.t3b:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-Dwarf")
-IPopBarFrameBag.t3b:SetWidth(231)
-IPopBarFrameBag.t3b:SetHeight(43)
-IPopBarFrameBag.t3b:SetPoint("BOTTOM", 396, 0)
-IPopBarFrameBag.t3b:SetTexCoord(0.09765625, 1.0, 0.08203125, 0.25)]]
+IPopBarFrameBar.bg2:SetTexCoord(0.1640625, 1.0, 0.58203125, 0.75)
+IPopBarFrameBar.bg3 = IPopBarFrameBar:CreateTexture(nil, "ARTWORK")
+IPopBarFrameBar.bg3:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-NightElf")
+IPopBarFrameBar.bg3:SetWidth(8)
+IPopBarFrameBar.bg3:SetHeight(43)
+IPopBarFrameBar.bg3:SetPoint("BOTTOMLEFT", -5.5, 0)
+IPopBarFrameBar.bg3:SetTexCoord(0.08984375, 0.12109375, 0.08203125, 0.25)
 
 -- Function to create one of our buttons
 local function CreateIPopBarButton(num)
-	local b = CreateFrame("CheckButton", "IPopBarButton"..num, nil, "ActionBarButtonTemplate")
+	local name = ("IPopBarButton%d"):format(num)
+	local b = CreateFrame("CheckButton", name, IPopBarFrameBar, "ActionBarButtonTemplate")
 	b:UnregisterEvent("ACTIONBAR_PAGE_CHANGED")
 	b:SetAttribute("actionpage", 1)
 	b:SetScript("OnEnter", buttonHandler.OnEnter)
+	-- Set the cooldown frame's framelevel to be the same as our buttons
+	_G[name.."Cooldown"]:SetFrameLevel(b:GetFrameLevel())
 	return b
 end
 
@@ -154,13 +141,13 @@ end
 for i = 1, 33 do
 	local b = CreateIPopBarButton(i)
 	if i <= 11 then
-		tinsert(row1, b)
+		row1[i] = b
 	elseif i <= 22 then
-		tinsert(row2, b)
+		row2[i - 11] = b
 	else
-		tinsert(row3, b)
+		row3[i - 22] = b
 	end
-	tinsert(allB, b)
+	allB[i] = b
 end
 
 -- Position all the buttons
@@ -173,147 +160,83 @@ for i = 2, 11 do
 	row3[i]:SetPoint("LEFT", row3[i-1], "RIGHT", 6, 0)
 end
 
--- Create our secure anchor that controls all our buttons
-local anchor = CreateFrame("Button", nil, MainMenuBar, "SecureHandlerEnterLeaveTemplate")
-anchor:SetAllPoints(IPopBarFrameBar)
-for i = 1, 33 do
-     allB[i]:SetParent(anchor)
-end
-anchor:Execute( [[Buttons = table.new(self:GetChildren())]] )
-anchor:Execute( [[HideAll = "if not self:IsUnderMouse(true) then for i = 12, 33 do Buttons[i]:Hide() end end"]] )
-anchor:SetAttribute("_onenter", [[ for i = 12, 33 do Buttons[i]:Show() end ]])
-anchor:SetAttribute("_onleave", [[ control:SetTimer(0.2, nil, HideAll) ]] )
-for i = 1, 33 do
-	SecureHandlerWrapScript(allB[i], "OnEnter", anchor, [[
-		for i = 12, 33 do
-			Buttons[i]:Show()
+-- Get button references into our secure header
+IPopBarFrameBar:Execute("Buttons = table.new(self:GetChildren())")
+
+-- Create our secure toggle button
+local IPopBarToggleButton = CreateFrame("Button", "IPopBarToggleButton", MainMenuBarArtFrame, "SecureHandlerClickTemplate")
+IPopBarToggleButton:RegisterForClicks("LeftButtonDown")
+IPopBarToggleButton:SetFrameRef("IPopBarFrameBar", IPopBarFrameBar)
+IPopBarToggleButton:SetAttribute("_onclick", [[
+	local IPopBarFrameBar = self:GetFrameRef("IPopBarFrameBar")
+	if IPopBarFrameBar:IsShown() then
+		IPopBarFrameBar:Hide()
+	else
+		IPopBarFrameBar:Show()
+	end
+	control:CallMethod("UpdateButtons", true)
+]])
+IPopBarToggleButton:SetPoint("CENTER", 30, -5)
+IPopBarToggleButton:SetWidth(12)
+IPopBarToggleButton:SetHeight(12)
+IPopBarToggleButton:SetScript("OnEnter", function(self, motion)
+	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	GameTooltip:AddLine(MicroButtonTooltipText("IPopBar v"..L["IPOPBAR_VERSION"], "CLICK IPopBarToggleButton:LeftButton"))
+
+	-- latency
+	local bandwidthIn, bandwidthOut, latency = GetNetStats()
+	GameTooltip:AddLine(format(MAINMENUBAR_LATENCY_LABEL, latency), 1.0, 1.0, 1.0)
+	if SHOW_NEWBIE_TIPS == "1" then
+		GameTooltip:AddLine(NEWBIE_TOOLTIP_LATENCY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+	end
+
+	-- framerate
+	GameTooltip:AddLine(format(MAINMENUBAR_FPS_LABEL, GetFramerate()), 1.0, 1.0, 1.0)
+	if SHOW_NEWBIE_TIPS == "1" then
+		GameTooltip:AddLine(NEWBIE_TOOLTIP_FRAMERATE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
+	end
+
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddLine(L["Click to toggle IPopBar."], 1.0, 0.8, 0, 1)
+	GameTooltip:Show()
+end)
+IPopBarToggleButton:SetScript("OnLeave", function(self, motion)
+	GameTooltip:Hide()
+end)
+IPopBarToggleButton:SetScript("OnUpdate", function(self, elapsed)
+	if self.updateInterval > 0 then
+		self.updateInterval = self.updateInterval - elapsed
+	else
+		self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL
+		local bandwidthIn, bandwidthOut, latency = GetNetStats()
+		if latency > PERFORMANCEBAR_MEDIUM_LATENCY then
+			MainMenuBarPageNumber:SetTextColor(1, 0, 0)
+		elseif latency > PERFORMANCEBAR_LOW_LATENCY then
+			MainMenuBarPageNumber:SetTextColor(1, 1, 0)
+		else
+			MainMenuBarPageNumber:SetTextColor(0, 1, 0)
 		end
-	]])
-end
-for i = 1, 33 do
-	SecureHandlerWrapScript(allB[i], "OnLeave", anchor, [[ control:SetTimer(0.2, nil, HideAll) ]] )
-end
-
-
----------------------------------------------------------------------------
--- Setting up the MainMenuBar to IPopBar style by modifying it
-
--- Move some of the default elements
-MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", MainMenuBarBackpackButton:GetParent(), "BOTTOMRIGHT", -6, 4)
-CharacterMicroButton:SetPoint("BOTTOMLEFT", CharacterMicroButton:GetParent(), "BOTTOMLEFT", 568, 2)
---MainMenuBarPerformanceBarFrame:SetPoint("BOTTOMRIGHT", MainMenuBarPerformanceBarFrame:GetParent(), "BOTTOMRIGHT", -468, -10)
---MainMenuBarPageNumber:SetPoint("CENTER", MainMenuBarPerformanceBarFrameButton, "CENTER", -3, 0)
-
--- Hide some of the default elements
-MainMenuBarTexture2:Hide()
-MainMenuBarTexture3:Hide()
+	end
+end)
+IPopBarToggleButton.updateInterval = 0
 
 -- Raise our frame's framelevel so that it covers the XP bar
 IPopBarFrame:SetFrameLevel(IPopBarFrame:GetFrameLevel() + 1)
 IPopBarFrameBar:SetFrameLevel(IPopBarFrameBar:GetFrameLevel() + 1)
-IPopBarFrameBag:SetFrameLevel(IPopBarFrameBag:GetFrameLevel() + 1)
-
--- Set the cooldown frame's framelevel to be the same as our buttons
-for i = 1, 33 do
-	_G[allB[i]:GetName().."Cooldown"]:SetFrameLevel(allB[i]:GetFrameLevel())
-end
-
---[[ Add stuff to the latency display button
-MainMenuBarPerformanceBarFrameButton:SetScript("OnClick", function()
-	IPopBar:ShowBars(1 - db.Enabled)
-end)
-hooksecurefunc("MainMenuBarPerformanceBarFrame_OnEnter", function()
-	local tooltiptext = MicroButtonTooltipText("", "TOGGLEIPOPBAR")
-	local line1 = GameTooltipTextLeft1:GetText()
-	if (not line1) then return end
-	GameTooltipTextLeft1:SetText(line1.." "..tooltiptext)
-	GameTooltip:AddLine("\n")
-	GameTooltip:AddLine(L["Click to toggle IPopBar."], 1.0, 0.8, 0, 1)
-	GameTooltip:Show()
-end)]]
 
 -- Hook Functions
-hooksecurefunc("TalentMicroButton_OnEvent", function()
-	if (db.Enabled == 1) then
-		TalentMicroButton:Hide()
-	else
-		UpdateTalentButton()
-	end
+hooksecurefunc("UpdateTalentButton", function()
+	if db.Enabled == 1 then TalentMicroButton:Hide() end
 end)
-
-local Original_MainMenuBar_UpdateKeyRing
-local function IPopBar_MainMenuBar_UpdateKeyRing()
-	--Don't call the original one at all. (Could be dangerous if other addons hook here.)
-	--Original_MainMenuBar_UpdateKeyRing()
-
-	if HasKey() and db.Enabled == 0 then
-		IPopBarFrameBag.t3b:SetWidth(241)
-		IPopBarFrameBag.t3b:SetPoint("BOTTOM", IPopBarFrameBag.t3b:GetParent(), "BOTTOM", 393.5, 0)
-		IPopBarFrameBag.t3b:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-KeyRing")
-		IPopBarFrameBag.t3b:SetTexCoord(0.05859375, 1, 0.1640625, 0.5)
-
-		IPopBarFrameBag.t3a:SetWidth(227)
-		IPopBarFrameBag.t3a:SetPoint("BOTTOM", IPopBarFrameBag.t3a:GetParent(), "BOTTOM", 160, 0)
-		KeyRingButton:Show()
-	end
-end
--- Yes, this this an unsecure hook, because I am replacing the function totally.
-Original_MainMenuBar_UpdateKeyRing = MainMenuBar_UpdateKeyRing
-MainMenuBar_UpdateKeyRing = IPopBar_MainMenuBar_UpdateKeyRing
-
-
----------------------------------------------------------------------------
--- Function to show or hide the popup rows when out of combat (more responsive)
-
-local function IPopBar_OnUpdate(self, elapsed)
-	IPopBar_LastUpdate = IPopBar_LastUpdate + elapsed
-	if not InCombatLockdown() and db.Enabled == 1 and db.NumRows > 1 then
-		if IPopBar_LastUpdate >= IPOPBAR_UPDATETIME then
-			IPopBar_LastUpdate = 0
-
-			local scale = self:GetEffectiveScale()
-			local xPos, yPos = GetCursorPosition()
-			xPos = xPos / scale
-			yPos = yPos / scale
-			local top = self:GetTop()
-			local bottom = self:GetBottom()
-
-			if IPopbar_Hovering == 1 then
-				top = bottom + (db.NumRows * 42)
-			end
-			
-			if yPos <= top and yPos >= bottom and xPos >= self:GetLeft() and xPos <= self:GetRight() then
-				IPopbar_Hovering = 1
-				IPopBar:ShowRow2()
-			else
-				IPopbar_Hovering = 0
-				IPopBar:HideRow2()
-			end
-		end
-	end
-end
-
--- Set scripts and some events for out of combat hovering
-IPopBarFrameBar:SetScript("OnShow", function(self)
-	if db.Enabled == 1 and db.NumRows > 1 then
-		self:SetScript("OnUpdate", IPopBar_OnUpdate)
-	end
+hooksecurefunc("AchievementMicroButton_Update", function()
+	if db.Enabled == 1 then AchievementMicroButton:Hide() end
 end)
-IPopBarFrameBar:SetScript("OnHide", function(self)
-	self:SetScript("OnUpdate", nil)
+hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
+	if db.Enabled == 1 then KeyRingButton:Hide() end
 end)
-
-function IPopBar:ShowRow2()
-	if not InCombatLockdown() then
-		--hdr:SetAttribute("state", 1)
-	end
-end
-
-function IPopBar:HideRow2()
-	if IPopbar_Hovering == 0 and not InCombatLockdown() then
-		--hdr:SetAttribute("state", 0)
-	end
-end
+hooksecurefunc("VehicleMenuBar_MoveMicroButtons", function(skinName)
+	if not skinName and db.Enabled == 1 then IPopBar:ShowBars(1) end
+end)
 
 
 ---------------------------------------------------------------------------
@@ -329,9 +252,6 @@ IPopBarFrameBar:SetScript("OnEvent", function(self, event)
 		self:SetScript("OnUpdate", nil)
 
 	elseif event == "PLAYER_REGEN_ENABLED" then
-		if self:IsVisible() and db.Enabled == 1 and db.NumRows > 1 then
-			self:SetScript("OnUpdate", IPopBar_OnUpdate)
-		end
 		if IPopBar_ModeBeforeCombat then
 			IPopBar:ShowBars(0)
 			IPopBar_ModeBeforeCombat = false
@@ -366,8 +286,20 @@ local function IPopBar_AdjustActionIDs()
 	end
 end
 
+-- This function migrates all the keybinds from the old
+-- "TOGGLEIPOPBAR" to the new "CLICK IPopBarToggleButton:LeftButton"
+local function IPopBar_MigrateOldKeyBind(...)
+	for i = 1, select("#", ...) do
+		local key = select(i, ...)
+		if key ~= "" then
+			SetBindingClick(key, "IPopBarToggleButton")
+		end
+	end
+	SaveBindings(GetCurrentBindingSet())
+end
+
 local function IPopBar_Initialize(self, event, arg1)
-	if arg1 == "IPopBar" then
+	if event == "ADDON_LOADED" and arg1 == "IPopBar" then
 		IPopBar_Config = IPopBar_Config or {}
 		db = IPopBar_Config
 		setmetatable(IPopBar_Config, {__index = defaults})
@@ -377,11 +309,7 @@ local function IPopBar_Initialize(self, event, arg1)
 
 		-- Apply loaded settings
 		IPopBar:ShowBars(db.Enabled)
-		if db.NumRows == 1 then IPopBar:HideRow2() end
-		if not db.ShowPageNum then MainMenuBarPageNumber:Hide() end
-		if IPopBarFrameBar:IsVisible() and db.Enabled == 1 and db.NumRows > 1 then
-			IPopBarFrameBar:SetScript("OnUpdate", IPopBar_OnUpdate)
-		end
+		--if not db.ShowPageNum then MainMenuBarPageNumber:Hide() end
 		MainMenuBar:SetScale(db.Scale)
 		MultiBarBottomLeft:SetScale(db.Scale)
 		MultiBarBottomRight:SetScale(db.Scale)
@@ -393,21 +321,27 @@ local function IPopBar_Initialize(self, event, arg1)
 		end
 		IPopBar_AdjustActionIDs()
 
-		-- Make it so that our buttons go above these buttons, since the default is "HIGH", and MainMenuBar is at "MEDIUM"
+		-- Make it so that our buttons go above these buttons, since
+		-- the default is "HIGH", and MainMenuBar is at "MEDIUM"
 		MultiBarBottomLeft:SetFrameStrata("LOW")
 		MultiBarBottomRight:SetFrameStrata("LOW")
 		MultiBarRight:SetFrameStrata("LOW")
 		MultiBarLeft:SetFrameStrata("LOW")
 
-		-- Set the time in/out on the popbars
-		--hdr:SetAttribute("delaytimemap-anchor-enter",  "0:"..db.TimeOut)
-		--hdr:SetAttribute("delaytimemap-anchor-leave",  "1:"..db.TimeIn)
-
 		IPopBarFrame:UnregisterEvent("ADDON_LOADED")
-		IPopBarFrame:SetScript("OnEvent", nil)
+
+	elseif event == "PLAYER_LOGIN" then
+		-- Migrate the old keybind
+		if not rawget(IPopBar_Config, "Version") or db.Version < 3.00 then
+			IPopBar_MigrateOldKeyBind(GetBindingKey("TOGGLEIPOPBAR"))
+			db.Version = 3.00
+		end
+		IPopBarFrame:UnregisterEvent("PLAYER_LOGIN")
+
 	end
 end
 IPopBarFrame:RegisterEvent("ADDON_LOADED")
+IPopBarFrame:RegisterEvent("PLAYER_LOGIN")
 IPopBarFrame:SetScript("OnEvent", IPopBar_Initialize)
 
 
@@ -416,9 +350,19 @@ IPopBarFrame:SetScript("OnEvent", IPopBar_Initialize)
 
 function IPopBar:ShowBars(toggle)
 	if InCombatLockdown() then return end
-
-	if (toggle == 1) then 
+	if toggle == 1 then
 		db.Enabled = 1
+		IPopBarFrameBar:Show()
+	else
+		db.Enabled = 0
+		IPopBarFrameBar:Hide()
+	end
+	IPopBar:UpdateButtons()
+end
+
+function IPopBar:UpdateButtons(issecure)
+	if issecure then db.Enabled = 1 - db.Enabled end
+	if db.Enabled == 1 then
 		CharacterMicroButton:Hide()
 		SpellbookMicroButton:Hide()
 		QuestLogMicroButton:Hide()
@@ -426,23 +370,20 @@ function IPopBar:ShowBars(toggle)
 		LFGMicroButton:Hide()
 		MainMenuMicroButton:Hide()
 		HelpMicroButton:Hide()
+		TalentMicroButton:Hide()
+		AchievementMicroButton:Hide()
+		PVPMicroButton:Hide()
+
 		MainMenuBarBackpackButton:Hide()
 		CharacterBag0Slot:Hide()
 		CharacterBag1Slot:Hide()
 		CharacterBag2Slot:Hide()
 		CharacterBag3Slot:Hide()
-		IPopBarFrameBag:Hide()
-		IPopBarFrameBar:Show()
-		anchor:Show()
-		TalentMicroButton:Hide()
 		KeyRingButton:Hide()
-		AchievementMicroButton:Hide()
-		PVPMicroButton:Hide()
+
+		MainMenuBarTexture2:Hide()
+		MainMenuBarTexture3:Hide()
 	else
-		db.Enabled = 0
-		IPopBarFrameBar:Hide()
-		anchor:Hide()
-		IPopBarFrameBag:Show()
 		CharacterMicroButton:Show()
 		SpellbookMicroButton:Show()
 		QuestLogMicroButton:Show()
@@ -450,37 +391,76 @@ function IPopBar:ShowBars(toggle)
 		LFGMicroButton:Show()
 		MainMenuMicroButton:Show()
 		HelpMicroButton:Show()
+		PVPMicroButton:Show()
+		UpdateTalentButton()
+		AchievementMicroButton_Update()
+
 		MainMenuBarBackpackButton:Show()
 		CharacterBag0Slot:Show()
 		CharacterBag1Slot:Show()
 		CharacterBag2Slot:Show()
 		CharacterBag3Slot:Show()
-		UpdateTalentButton()
 		MainMenuBar_UpdateKeyRing()
-		AchievementMicroButton:Show()
-		PVPMicroButton:Show()
+
+		MainMenuBarTexture2:Show()
+		MainMenuBarTexture3:Show()
 	end
 end
+IPopBarToggleButton.UpdateButtons = IPopBar.UpdateButtons
 
 -- Configure button popup row hidestates
 function IPopBar:ConfigureButtonHideStates()
 	if InCombatLockdown() then return end
-	if (db.NumRows == 1) then
+	local onEnter, onLeave
+
+	if db.NumRows == 1 then
 		for i = 1, 11 do
-			row2[i]:SetAttribute("hidestates", "*")
-			row3[i]:SetAttribute("hidestates", "*")
+			row2[i]:Hide()
+			row3[i]:Hide()
+			SecureHandlerUnwrapScript(allB[i], "OnEnter")
+			SecureHandlerUnwrapScript(allB[i], "OnLeave")
 		end
-	elseif (db.NumRows == 2) then
+		IPopBarFrameBar:SetAttribute("_onenter", nil)
+		IPopBarFrameBar:SetAttribute("_onleave", nil)
+	elseif db.NumRows == 2 then
 		for i = 1, 11 do
-			row2[i]:SetAttribute("hidestates", "0")
-			row3[i]:SetAttribute("hidestates", "*")
+			row2[i]:Show()
+			row3[i]:Hide()
 		end
-	elseif (db.NumRows == 3) then
+		onEnter = "enterTime = control:GetTime() for i = 12, 22 do Buttons[i]:Show() end"
+		onLeave = format("control:SetTimer(%.1f, nil, HideAll)", db.TimeOut)
+		IPopBarFrameBar:SetAttribute("_onenter", onEnter)
+		IPopBarFrameBar:SetAttribute("_onleave", onLeave)
+		for i = 1, 33 do
+			SecureHandlerUnwrapScript(allB[i], "OnEnter")
+			SecureHandlerUnwrapScript(allB[i], "OnLeave")
+			SecureHandlerWrapScript(allB[i], "OnEnter", IPopBarFrameBar, onEnter)
+			SecureHandlerWrapScript(allB[i], "OnLeave", IPopBarFrameBar, onLeave)
+		end
+	elseif db.NumRows == 3 then
 		for i = 1, 11 do
-			row2[i]:SetAttribute("hidestates", "0")
-			row3[i]:SetAttribute("hidestates", "0")
+			row2[i]:Show()
+			row3[i]:Show()
+		end
+		onEnter = "enterTime = control:GetTime() for i = 12, 33 do Buttons[i]:Show() end"
+		onLeave = format("control:SetTimer(%.1f, nil, HideAll)", db.TimeOut)
+		IPopBarFrameBar:SetAttribute("_onenter", onEnter)
+		IPopBarFrameBar:SetAttribute("_onleave", onLeave)
+		for i = 1, 33 do
+			SecureHandlerUnwrapScript(allB[i], "OnEnter")
+			SecureHandlerUnwrapScript(allB[i], "OnLeave")
+			SecureHandlerWrapScript(allB[i], "OnEnter", IPopBarFrameBar, onEnter)
+			SecureHandlerWrapScript(allB[i], "OnLeave", IPopBarFrameBar, onLeave)
 		end
 	end
+
+	local HideButtons = format("for i = 12, %d do Buttons[i]:Hide() end", db.NumRows * 11)
+	local HideAll = format( [[HideAll = "if when - enterTime >= %.2f and not self:IsUnderMouse(true) then ]]..HideButtons..[[ end"]] , db.TimeOut - 0.01)
+	local HideIt = format("enterTime = control:GetTime() control:SetTimer(%.1f, nil, HideAll)", db.TimeOut)
+	IPopBarFrameBar:Execute(HideAll)
+	IPopBarFrameBar:Execute(HideIt)
+	IPopBarFrameBar:SetAttribute("_onshow", "if self:IsUnderMouse(true) then "..onEnter.." end")
+	IPopBarFrameBar:SetAttribute("_onhide", HideButtons)
 end
 
 
@@ -497,15 +477,9 @@ local function IPopBar_Help(msg, quietmode)
 		end
 		db.NumRows = tonumber(string.match(msg, "^rows ([123])$"))
 		IPopBar:ConfigureButtonHideStates()
-		IPopBar:HideRow2()
-		if IPopBarFrameBar:IsVisible() and db.Enabled == 1 and db.NumRows > 1 then
-			IPopBarFrameBar:SetScript("OnUpdate", IPopBar_OnUpdate)
-		else
-			IPopBarFrameBar:SetScript("OnUpdate", nil)
-		end
 		if not quietmode then DEFAULT_CHAT_FRAME:AddMessage(L["IPopBar is now set to only use %d row(s) of buttons."]:format(db.NumRows)) end
 
-	elseif msg == "pagenum" then
+	--[[elseif msg == "pagenum" then
 		db.ShowPageNum = not db.ShowPageNum
 		if db.ShowPageNum then
 			MainMenuBarPageNumber:Show()
@@ -513,7 +487,7 @@ local function IPopBar_Help(msg, quietmode)
 		else
 			MainMenuBarPageNumber:Hide()
 			if not quietmode then DEFAULT_CHAT_FRAME:AddMessage(L["IPopBar is now hiding the action bar page number on the latency meter."]) end
-		end
+		end]]
 
 	elseif msg == "togglecombat" then
 		db.AutoToggleCombat = not db.AutoToggleCombat
@@ -577,7 +551,7 @@ local function IPopBar_Help(msg, quietmode)
 		db.Row3StartID = nil
 		IPopBar_AdjustActionIDs()
 
-	elseif string.match(msg, "^appear ([0-9.]+)$") then
+	--[[elseif string.match(msg, "^appear ([0-9.]+)$") then
 		if InCombatLockdown() then
 			DEFAULT_CHAT_FRAME:AddMessage(L["IPopBar cannot change this setting while in combat."])
 			return
@@ -585,10 +559,10 @@ local function IPopBar_Help(msg, quietmode)
 		local t = tonumber(string.match(msg, "^appear ([0-9.]+)$"))
 		if t and t >= 0 and t <= 5 then
 			db.TimeIn = t
-			--hdr:SetAttribute("delaytimemap-anchor-enter",  "0:"..tostring(t))
+			IPopBar:ConfigureButtonHideStates()
 		else
 			DEFAULT_CHAT_FRAME:AddMessage(L["Invalid time specified. It must be between 0 and 5.0."])
-		end
+		end]]
 
 	elseif string.match(msg, "^disappear ([0-9.]+)$") then
 		if InCombatLockdown() then
@@ -598,22 +572,22 @@ local function IPopBar_Help(msg, quietmode)
 		local t = tonumber(string.match(msg, "^disappear ([0-9.]+)$"))
 		if t and t >= 0 and t <= 5 then
 			db.TimeOut = t
-			--hdr:SetAttribute("delaytimemap-anchor-leave",  "1:"..tostring(t))
+			IPopBar:ConfigureButtonHideStates()
 		else
 			DEFAULT_CHAT_FRAME:AddMessage(L["Invalid time specified. It must be between 0 and 5.0."])
 		end
 
 	else
-		if not quietmode then 
+		if not quietmode then
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.."|r - "..L["Display this help. (IPopBar v%s)"]:format(L["IPOPBAR_VERSION"]))
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." rows X|r - "..L["Use X rows of buttons. X can be 1, 2 or 3."])
-			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." pagenum|r - "..L["Show/hide the action page number on the latency meter"])
+			--DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." pagenum|r - "..L["Show/hide the action page number on the latency meter"])
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." togglecombat|r - "..L["Automatically switch to bar mode on entering combat."])
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." scale X|r - "..L["Scale the main menu bar. X can be between 0.5 and 2.0."])
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." endcaps|r - "..L["Show/hide the gryphon end caps on the main menu bar"])
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." rowXstartID Y|r - "..L["Set the starting action ID of row X to action ID Y. X can be 1, 2, or 3; Y can be between 1 and 110."])
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." resetstartID|r - "..L["Resets the starting action IDs of all the rows to the defaults."])
-			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." appear X|r - "..L["Change the time it takes before the popbar rows appear. Only affects combat. X can be between 0 and 5 (0.2 default)."])
+			--DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." appear X|r - "..L["Change the time it takes before the popbar rows appear. Only affects combat. X can be between 0 and 5 (0.2 default)."])
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." disappear X|r - "..L["Change the time it takes before the popbar rows disappear. Only affects combat. X can be between 0 and 5 (0.2 default)."])
 		end
 	end
@@ -695,7 +669,7 @@ local options = {
 					arg = "Scale",
 					order = 2,
 				},
-				timein = {
+				--[[timein = {
 					name = L["Hover in time"],
 					desc = L["The amount of time before the popbar rows appear. Only affects combat."],
 					type = "range",
@@ -703,7 +677,7 @@ local options = {
 					set = function(info, v) IPopBar_Help("appear "..v, true) end,
 					arg = "TimeIn",
 					order = 3,
-				},
+				},]]
 				timeout = {
 					name = L["Hover out time"],
 					desc = L["The amount of time before the popbar rows disappear. Only affects combat."],
@@ -722,7 +696,7 @@ local options = {
 					width = "double",
 					order = 5,
 				},
-				pagenum = {
+				--[[pagenum = {
 					name = L["Show action bar page number"],
 					desc = L["Show/hide the action page number on the latency meter"],
 					type = "toggle",
@@ -730,7 +704,7 @@ local options = {
 					arg = "ShowPageNum",
 					width = "double",
 					order = 6,
-				},
+				},]]
 				togglecombat = {
 					name = L["Auto-switch to bar mode on combat"],
 					desc = L["Automatically switch IPopBar to bar mode on entering combat"],
@@ -739,7 +713,7 @@ local options = {
 					arg = "AutoToggleCombat",
 					width = "double",
 					order = 7,
-				},				
+				},
 			},
 		},
 		advanced = {
@@ -818,16 +792,16 @@ local options = {
 					desc = L["Toggle Menu Bar/IPopBar"],
 					type = "keybinding",
 					get = function(info)
-						return table.concat(KeybindHelper:MakeKeyBindingTable(GetBindingKey("TOGGLEIPOPBAR")), ", ")
+						return table.concat(KeybindHelper:MakeKeyBindingTable(GetBindingKey("IPopBarToggleButton")), ", ")
 					end,
 					set = function(info, key)
 						if key == "" then
-							local t = KeybindHelper:MakeKeyBindingTable(GetBindingKey("TOGGLEIPOPBAR"))
+							local t = KeybindHelper:MakeKeyBindingTable(GetBindingKey("IPopBarToggleButton"))
 							for i = 1, #t do
 								SetBinding(t[i])
 							end
 						else
-							SetBinding(key, "TOGGLEIPOPBAR")
+							SetBinding(key, "IPopBarToggleButton")
 						end
 						SaveBindings(GetCurrentBindingSet())
 					end,

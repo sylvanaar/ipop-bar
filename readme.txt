@@ -1,29 +1,8 @@
-Integrated PopBar v2.03 (17th May 2008 for v2.4.2.8278) - By Xinhuan
+Integrated PopBar v3.00 (20th October 2008)
+For Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095
+By Xinhuan
 
 Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
-
-
-===========================
-Screenshot explanation:
-
-The following is what the toolbar looks like normally. Notice that I've actually swapped the positions of the Latency Bar and the MenuMicroButtons. (Picture 1)
-
-http://home2.pacific.net.sg/~xinhuan/wow/IPopBar1.jpg
-
-Hovering the mouse over the Latency Bar, I've bounded Latency Bar to be clickable (in the picture, I've bounded it to 'Y') on to toggle between the Menu and IPopBar. (Picture 2)
-
-http://home2.pacific.net.sg/~xinhuan/wow/IPopBar2.jpg
-
-Click! The menu bar and bag buttons are now replaced by IPopBar! It displays 11 icons hotkeys that are boundable in the Key Bindings. (Picture 3)
-
-http://home2.pacific.net.sg/~xinhuan/wow/IPopBar3.jpg
-
-Hovering the mouse over the IPopBar (bottom, Row 1) will cause an additional row of toolbar to appear. Over here, my mouse is on the Tauren War Stomp ability. (Picture 4)
-
-http://home2.pacific.net.sg/~xinhuan/wow/IPopBar4.jpg
-
-Click this link to jump to a page with all 4 screenshots on one page for easy viewing:
-http://home2.pacific.net.sg/~xinhuan/wow/IPopBar.html
 
 
 ===========================
@@ -43,13 +22,11 @@ Commands:
 
 /ipopbar : Shows help on available commands.
 /ipopbar rows X : Use X rows of buttons. X can be 1, 2 or 3.
-/ipopbar pagenum : Show/hide the action page number on the latency meter.
 /ipopbar togglecombat : Automatically switch to bar mode on entering combat.
 /ipopbar scale X : Scale the main menu bar. X can be between 0.5 and 2.0.
 /ipopbar endcaps : Show/hide the dragon end caps on the main menu bar.
 /ipopbar rowXstartID Y : Set the starting action ID of row X to action ID Y. X can be 1, 2, or 3; Y can be between 1 and 110.
 /ipopbar resetstartID : Resets the starting action IDs of all the rows to the defaults.
-/ipopbar appear X : Change the time it takes before the popbar rows appear. Only affects combat.
 /ipopbar disappear X : Change the time it takes before the popbar rows disappear. Only affects combat.
 
 If you have Ace3 core libraries installed, then typing /ipopbar will instead open the Ace3 configuration screen for IPopBar.
@@ -65,7 +42,8 @@ If you loot an item, the normal animation of the item that goes into the bag doe
 Download:
 Download this UI from
 - http://ui.worldofwar.net/ui.php?id=370
-- http://files.wowace.com/IPopBar
+- http://www.wowace.com/projects/ipop-bar/
+- http://wow.curse.com/downloads/wow-addons/details/ipop-bar.aspx
 
 
 ===========================
@@ -79,12 +57,18 @@ C:\Games\World of Warcraft\Interface\AddOns\IPopBar\*.*
 ===========================
 Credits:
 - Idea based on PopBar by Mugendai.
-- Stateheader code is mostly from "Mairelon's Action Bars and State Headers"
-  tutorial at http://forums.worldofwarcraft.com/thread.html?topicId=2968230859&sid=1
 
 
 ===========================
 Patch Notes
+v3.00 (from v2.02) (20th October 2008)
+- Written for Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095.
+- Massive rewrite due to the changed secure headers in 3.0.
+- The latency meter is now gone. The action bar page number text coloring will now show latency, in addition to being clickable to toggle between bag and bar modes.
+- You may now toggle between bag and bar modes in combat.
+- Hover-in time option is temporarily removed.
+- Showing/hiding action bar page number option is removed.
+
 v2.03 (from v2.02) (17th May 2008)
 - Written for v2.4.2.8278
 - Added option to change the hover in and out time for the popup rows.
