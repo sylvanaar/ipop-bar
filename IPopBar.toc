@@ -7,7 +7,7 @@
 ## X-eMail: xinhuan @ gmail DOT com
 ## X-Category: Action Bars
 ## X-License: GPL v2
-## Version: 3.00
+## Version: 3.01
 
 Locales\Locale-enUS.lua
 Locales\Locale-deDE.lua

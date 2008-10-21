@@ -1,4 +1,4 @@
-Integrated PopBar v3.00 (20th October 2008)
+Integrated PopBar v3.01 (20th October 2008)
 For Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095
 By Xinhuan
 
@@ -8,7 +8,7 @@ Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into th
 ===========================
 Description:
 
-Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggle-able between the Bag Buttons and 3 extra rows of buttons.
+Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
 
 This AddOn is not designed to be draggable or movable and is not as customizable as some of the other additional toolbar addons. This AddOn is completely standalone and is not dependent on any other AddOn.
 
@@ -61,7 +61,7 @@ Credits:
 
 ===========================
 Patch Notes
-v3.00 (from v2.02) (20th October 2008)
+v3.01 (from v2.03) (20th October 2008)
 - Written for Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095.
 - Massive rewrite due to the changed secure headers in 3.0.
 - The latency meter is now gone. The action bar page number text coloring will now show latency, in addition to being clickable to toggle between bag and bar modes.
