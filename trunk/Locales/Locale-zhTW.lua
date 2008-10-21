@@ -8,7 +8,7 @@ local L = {}
 -- Name (short and long) and version of the addon
 L["IPopBar"] = true
 L["Integrated PopBar"] = true
-L["IPOPBAR_VERSION"] = "3.00"
+L["IPOPBAR_VERSION"] = "3.01"
 
 
 

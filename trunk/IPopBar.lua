@@ -1,5 +1,5 @@
 --[[
-	Integrated PopBar v3.00 (20th October 2008)
+	Integrated PopBar v3.01 (20th October 2008)
 	For Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095
 	By Xinhuan
 
@@ -120,10 +120,10 @@ IPopBarFrameBar.bg2:SetPoint("BOTTOMLEFT", 252, 0)
 IPopBarFrameBar.bg2:SetTexCoord(0.1640625, 1.0, 0.58203125, 0.75)
 IPopBarFrameBar.bg3 = IPopBarFrameBar:CreateTexture(nil, "ARTWORK")
 IPopBarFrameBar.bg3:SetTexture("Interface\\MainMenuBar\\UI-MainMenuBar-NightElf")
-IPopBarFrameBar.bg3:SetWidth(8)
+IPopBarFrameBar.bg3:SetWidth(9)
 IPopBarFrameBar.bg3:SetHeight(43)
-IPopBarFrameBar.bg3:SetPoint("BOTTOMLEFT", -5.5, 0)
-IPopBarFrameBar.bg3:SetTexCoord(0.08984375, 0.12109375, 0.08203125, 0.25)
+IPopBarFrameBar.bg3:SetPoint("BOTTOMLEFT", -6, 0)
+IPopBarFrameBar.bg3:SetTexCoord(0.0859375, 0.12109375, 0.08203125, 0.25)
 
 -- Function to create one of our buttons
 local function CreateIPopBarButton(num)
@@ -180,7 +180,11 @@ IPopBarToggleButton:SetPoint("CENTER", 30, -5)
 IPopBarToggleButton:SetWidth(12)
 IPopBarToggleButton:SetHeight(12)
 IPopBarToggleButton:SetScript("OnEnter", function(self, motion)
-	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	if SHOW_NEWBIE_TIPS == "1" then
+		GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 32.5)
+	end
 	GameTooltip:AddLine(MicroButtonTooltipText("IPopBar v"..L["IPOPBAR_VERSION"], "CLICK IPopBarToggleButton:LeftButton"))
 
 	-- latency
