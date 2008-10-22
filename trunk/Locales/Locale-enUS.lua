@@ -8,7 +8,6 @@ local L = IPopBar_Localization
 -- Name (short and long) and version of the addon
 L["IPopBar"] = true
 L["Integrated PopBar"] = true
-L["IPOPBAR_VERSION"] = "3.01"
 
 -- Keybindings Menu
 L["IPopBar Buttons"] = true

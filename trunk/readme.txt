@@ -1,4 +1,4 @@
-Integrated PopBar v3.01 (20th October 2008)
+Integrated PopBar v3.02 (22th October 2008)
 For Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095
 By Xinhuan
 
@@ -61,6 +61,10 @@ Credits:
 
 ===========================
 Patch Notes
+v3.02 (from v3.01) (22th October 2008)
+- Fix possible issue with /ipopbar command generating an "Open" error.
+- Fix nil error on line 466 which only happens if you use 0 popup bars.
+
 v3.01 (from v2.03) (20th October 2008)
 - Written for Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095.
 - Massive rewrite due to the changed secure headers in 3.0.

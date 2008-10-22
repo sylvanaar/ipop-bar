@@ -8,7 +8,6 @@ local L = {}
 -- Name (short and long) and version of the addon
 L["IPopBar"] = "IPopBar"
 L["Integrated PopBar"] = "Integrated PopBar"
-L["IPOPBAR_VERSION"] = "3.01"
 
 -- Keybindings Menu
 L["IPopBar Buttons"] = "IPopBar 按钮"
