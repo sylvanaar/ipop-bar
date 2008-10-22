@@ -1,5 +1,5 @@
 --[[
-	Integrated PopBar v3.01 (20th October 2008)
+	Integrated PopBar v3.02 (22th October 2008)
 	For Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095
 	By Xinhuan
 
@@ -31,7 +31,7 @@ local defaults = {
 	ShowEndCaps      = true,
 	TimeIn           = 0.2,
 	TimeOut          = 0.2,
-	Version          = 3.00,
+	Version          = 3.02,
 }
 local defaultStartIDs = {
 	WARRIOR = {
@@ -185,7 +185,7 @@ IPopBarToggleButton:SetScript("OnEnter", function(self, motion)
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 32.5)
 	end
-	GameTooltip:AddLine(MicroButtonTooltipText("IPopBar v"..L["IPOPBAR_VERSION"], "CLICK IPopBarToggleButton:LeftButton"))
+	GameTooltip:AddLine(MicroButtonTooltipText("IPopBar v"..defaults.Version, "CLICK IPopBarToggleButton:LeftButton"))
 
 	-- latency
 	local bandwidthIn, bandwidthOut, latency = GetNetStats()
@@ -338,7 +338,7 @@ local function IPopBar_Initialize(self, event, arg1)
 		-- Migrate the old keybind
 		if not rawget(IPopBar_Config, "Version") or db.Version < 3.00 then
 			IPopBar_MigrateOldKeyBind(GetBindingKey("TOGGLEIPOPBAR"))
-			db.Version = 3.00
+			db.Version = defaults.Version
 		end
 		IPopBarFrame:UnregisterEvent("PLAYER_LOGIN")
 
@@ -415,7 +415,7 @@ IPopBarToggleButton.UpdateButtons = IPopBar.UpdateButtons
 -- Configure button popup row hidestates
 function IPopBar:ConfigureButtonHideStates()
 	if InCombatLockdown() then return end
-	local onEnter, onLeave
+	local onEnter, onLeave = "", ""
 
 	if db.NumRows == 1 then
 		for i = 1, 11 do
@@ -583,7 +583,7 @@ local function IPopBar_Help(msg, quietmode)
 
 	else
 		if not quietmode then
-			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.."|r - "..L["Display this help. (IPopBar v%s)"]:format(L["IPOPBAR_VERSION"]))
+			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.."|r - "..L["Display this help. (IPopBar v%s)"]:format(defaults.Version))
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." rows X|r - "..L["Use X rows of buttons. X can be 1, 2 or 3."])
 			--DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." pagenum|r - "..L["Show/hide the action page number on the latency meter"])
 			DEFAULT_CHAT_FRAME:AddMessage("|cff00f100"..SLASH_IPOPBARHELP1.." togglecombat|r - "..L["Automatically switch to bar mode on entering combat."])
@@ -835,22 +835,18 @@ for i = 1, 3 do
 end
 
 -- Add Slash Command
+local isRegisteredWithAce3 = false
 SLASH_IPOPBARHELP1 = "/ipopbar"
 SlashCmdList["IPOPBARHELP"] = function(msg)
 	local Ace3Registry = LibStub and LibStub("AceConfigRegistry-3.0", 1)
 	local Ace3Dialog = LibStub and LibStub("AceConfigDialog-3.0", 1)
 	if Ace3Registry and Ace3Dialog then
-		Ace3Registry:RegisterOptionsTable("IPopBar", options)
+		if not isRegisteredWithAce3 then
+			Ace3Registry:RegisterOptionsTable("IPopBar", options)
+			isRegisteredWithAce3 = true
+		end
 		Ace3Dialog:Open("IPopBar")
 	else
 		IPopBar_Help(msg)
 	end
 end
-
--- Register options table with Ace3 if available, this is optional
--- as we don't depend on Ace3
-local Ace3Registry = LibStub and LibStub("AceConfigRegistry-3.0", 1)
-if Ace3Registry then
-	Ace3Registry:RegisterOptionsTable("IPopBar", options)
-end
-
