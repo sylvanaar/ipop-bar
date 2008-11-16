@@ -230,16 +230,19 @@ IPopBarFrameBar:SetFrameLevel(IPopBarFrameBar:GetFrameLevel() + 1)
 
 -- Hook Functions
 hooksecurefunc("UpdateTalentButton", function()
-	if db.Enabled == 1 then TalentMicroButton:Hide() end
+	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then TalentMicroButton:Hide() end
 end)
 hooksecurefunc("AchievementMicroButton_Update", function()
-	if db.Enabled == 1 then AchievementMicroButton:Hide() end
+	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then AchievementMicroButton:Hide() end
 end)
 hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
-	if db.Enabled == 1 then KeyRingButton:Hide() end
+	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
 end)
 hooksecurefunc("VehicleMenuBar_MoveMicroButtons", function(skinName)
-	if not skinName and db.Enabled == 1 then IPopBar:ShowBars(1) end
+	if not skinName then IPopBar:ShowBars(db.Enabled) end
+end)
+hooksecurefunc("MainMenuBar_UpdateArt", function(MainMenuBar)
+	IPopBar:ShowBars(db.Enabled)
 end)
 
 
@@ -299,7 +302,9 @@ local function IPopBar_MigrateOldKeyBind(...)
 			SetBindingClick(key, "IPopBarToggleButton")
 		end
 	end
-	SaveBindings(GetCurrentBindingSet())
+	if GetCurrentBindingSet() then
+		SaveBindings(GetCurrentBindingSet())
+	end
 end
 
 local function IPopBar_Initialize(self, event, arg1)
@@ -353,7 +358,7 @@ IPopBarFrame:SetScript("OnEvent", IPopBar_Initialize)
 -- Other functions
 
 function IPopBar:ShowBars(toggle)
-	if InCombatLockdown() then return end
+	if InCombatLockdown() then IPopBar:UpdateButtons() return end
 	if toggle == 1 then
 		db.Enabled = 1
 		IPopBarFrameBar:Show()
@@ -367,16 +372,18 @@ end
 function IPopBar:UpdateButtons(issecure)
 	if issecure then db.Enabled = 1 - db.Enabled end
 	if db.Enabled == 1 then
-		CharacterMicroButton:Hide()
-		SpellbookMicroButton:Hide()
-		QuestLogMicroButton:Hide()
-		SocialsMicroButton:Hide()
-		LFGMicroButton:Hide()
-		MainMenuMicroButton:Hide()
-		HelpMicroButton:Hide()
-		TalentMicroButton:Hide()
-		AchievementMicroButton:Hide()
-		PVPMicroButton:Hide()
+		if not VehicleMenuBar:IsShown() then
+			CharacterMicroButton:Hide()
+			SpellbookMicroButton:Hide()
+			QuestLogMicroButton:Hide()
+			SocialsMicroButton:Hide()
+			LFGMicroButton:Hide()
+			MainMenuMicroButton:Hide()
+			HelpMicroButton:Hide()
+			TalentMicroButton:Hide()
+			AchievementMicroButton:Hide()
+			PVPMicroButton:Hide()
+		end
 
 		MainMenuBarBackpackButton:Hide()
 		CharacterBag0Slot:Hide()
