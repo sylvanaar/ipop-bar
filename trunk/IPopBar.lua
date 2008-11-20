@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.02 (22th October 2008)
-	For Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095
+	Integrated PopBar v3.03 (21st November 2008)
+	For Live Servers v3.0.3.9183
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -31,7 +31,7 @@ local defaults = {
 	ShowEndCaps      = true,
 	TimeIn           = 0.2,
 	TimeOut          = 0.2,
-	Version          = 3.02,
+	Version          = 3.03,
 }
 local defaultStartIDs = {
 	WARRIOR = {
