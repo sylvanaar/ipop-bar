@@ -430,6 +430,8 @@ function IPopBar:ConfigureButtonHideStates()
 			row3[i]:Hide()
 			SecureHandlerUnwrapScript(allB[i], "OnEnter")
 			SecureHandlerUnwrapScript(allB[i], "OnLeave")
+			row2[i]:SetAttribute("statehidden", true)
+			row3[i]:SetAttribute("statehidden", true)
 		end
 		IPopBarFrameBar:SetAttribute("_onenter", nil)
 		IPopBarFrameBar:SetAttribute("_onleave", nil)
@@ -437,6 +439,8 @@ function IPopBar:ConfigureButtonHideStates()
 		for i = 1, 11 do
 			row2[i]:Show()
 			row3[i]:Hide()
+			row2[i]:SetAttribute("statehidden", nil)
+			row3[i]:SetAttribute("statehidden", true)
 		end
 		onEnter = "enterTime = control:GetTime() for i = 12, 22 do Buttons[i]:Show() end"
 		onLeave = format("control:SetTimer(%.1f, nil, HideAll)", db.TimeOut)
@@ -452,6 +456,8 @@ function IPopBar:ConfigureButtonHideStates()
 		for i = 1, 11 do
 			row2[i]:Show()
 			row3[i]:Show()
+			row2[i]:SetAttribute("statehidden", nil)
+			row3[i]:SetAttribute("statehidden", nil)
 		end
 		onEnter = "enterTime = control:GetTime() for i = 12, 33 do Buttons[i]:Show() end"
 		onLeave = format("control:SetTimer(%.1f, nil, HideAll)", db.TimeOut)
