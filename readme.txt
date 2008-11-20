@@ -1,5 +1,5 @@
-Integrated PopBar v3.02 (22th October 2008)
-For Live Servers v3.0.2.9056 or WotLK Beta Servers v3.0.3.9095
+Integrated PopBar v3.03 (21st November 2008)
+For Live Servers v3.0.3.9183
 By Xinhuan
 
 Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
@@ -61,6 +61,12 @@ Credits:
 
 ===========================
 Patch Notes
+
+v3.03 (from v3.02) (21st November 2008)
+- Written for Live Servers v3.0.3.9183.
+- Fixes some issues with IPopBar when using vehicles.
+- Fixes show/hide states of row2 and row3 buttons when logging in, moving actions or otherwise.
+
 v3.02 (from v3.01) (22th October 2008)
 - Fix possible issue with /ipopbar command generating an "Open" error.
 - Fix nil error on line 466 which only happens if you use 0 popup bars.
