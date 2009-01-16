@@ -250,23 +250,15 @@ end)
 -- Function to toggle IPopBar to Bar mode when entering combat
 
 IPopBarFrameBar:SetScript("OnEvent", function(self, event)
-	if event == "PLAYER_REGEN_DISABLED" then
+	if event == "PLAYER_REGEN_DISABLED" and db.Enabled == 0 then
 		-- Enter IPopBar mode when entering combat
-		if db.Enabled == 0 and db.AutoToggleCombat then
-			IPopBar:ShowBars(1)
-			IPopBar_ModeBeforeCombat = true
-		end
-		self:SetScript("OnUpdate", nil)
-
-	elseif event == "PLAYER_REGEN_ENABLED" then
-		if IPopBar_ModeBeforeCombat then
-			IPopBar:ShowBars(0)
-			IPopBar_ModeBeforeCombat = false
-		end
+		IPopBar:ShowBars(1)
+		IPopBar_ModeBeforeCombat = true
+	elseif event == "PLAYER_REGEN_ENABLED" and IPopBar_ModeBeforeCombat then
+		IPopBar:ShowBars(0)
+		IPopBar_ModeBeforeCombat = false
 	end
 end)
-IPopBarFrameBar:RegisterEvent("PLAYER_REGEN_DISABLED")
-IPopBarFrameBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 
 ---------------------------------------------------------------------------
@@ -307,8 +299,11 @@ local function IPopBar_MigrateOldKeyBind(...)
 	end
 end
 
-local function IPopBar_Initialize(self, event, arg1)
-	if event == "ADDON_LOADED" and arg1 == "IPopBar" then
+local function IPopBar_OnEvent(self, event, arg1)
+	if event == "PLAYER_ENTERING_WORLD" then
+		IPopBar:UpdateButtons()
+	
+	elseif event == "ADDON_LOADED" and arg1 == "IPopBar" then
 		IPopBar_Config = IPopBar_Config or {}
 		db = IPopBar_Config
 		setmetatable(IPopBar_Config, {__index = defaults})
@@ -329,6 +324,10 @@ local function IPopBar_Initialize(self, event, arg1)
 			MainMenuBarRightEndCap:Hide()
 		end
 		IPopBar_AdjustActionIDs()
+		if db.AutoToggleCombat then
+			IPopBarFrameBar:RegisterEvent("PLAYER_REGEN_DISABLED")
+			IPopBarFrameBar:RegisterEvent("PLAYER_REGEN_ENABLED")
+		end
 
 		-- Make it so that our buttons go above these buttons, since
 		-- the default is "HIGH", and MainMenuBar is at "MEDIUM"
@@ -351,7 +350,8 @@ local function IPopBar_Initialize(self, event, arg1)
 end
 IPopBarFrame:RegisterEvent("ADDON_LOADED")
 IPopBarFrame:RegisterEvent("PLAYER_LOGIN")
-IPopBarFrame:SetScript("OnEvent", IPopBar_Initialize)
+IPopBarFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+IPopBarFrame:SetScript("OnEvent", IPopBar_OnEvent)
 
 
 ---------------------------------------------------------------------------
@@ -508,6 +508,13 @@ local function IPopBar_Help(msg, quietmode)
 
 	elseif msg == "togglecombat" then
 		db.AutoToggleCombat = not db.AutoToggleCombat
+		if db.AutoToggleCombat then
+			IPopBarFrameBar:RegisterEvent("PLAYER_REGEN_DISABLED")
+			IPopBarFrameBar:RegisterEvent("PLAYER_REGEN_ENABLED")
+		else
+			IPopBarFrameBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			IPopBarFrameBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		end
 		if not quietmode then
 			if db.AutoToggleCombat then
 				DEFAULT_CHAT_FRAME:AddMessage(L["IPopBar will now automatically switch to bar mode on entering combat."])
