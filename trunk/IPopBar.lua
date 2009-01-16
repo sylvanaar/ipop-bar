@@ -1,5 +1,5 @@
 --[[
-	Integrated PopBar v3.03 (21st November 2008)
+	Integrated PopBar v3.04 (16th January 2009)
 	For Live Servers v3.0.3.9183
 	By Xinhuan
 
@@ -31,7 +31,7 @@ local defaults = {
 	ShowEndCaps      = true,
 	TimeIn           = 0.2,
 	TimeOut          = 0.2,
-	Version          = 3.03,
+	Version          = 3.04,
 }
 local defaultStartIDs = {
 	WARRIOR = {

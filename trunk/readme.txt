@@ -1,4 +1,4 @@
-Integrated PopBar v3.03 (21st November 2008)
+Integrated PopBar v3.04 (16th January 2009)
 For Live Servers v3.0.3.9183
 By Xinhuan
 
@@ -61,6 +61,9 @@ Credits:
 
 ===========================
 Patch Notes
+
+v3.04 (from v3.03) (16th January 2009)
+- Fix overlapping micro menu buttons if you zone while being in a vehicle.
 
 v3.03 (from v3.02) (21st November 2008)
 - Written for Live Servers v3.0.3.9183.
