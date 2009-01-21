@@ -1,5 +1,5 @@
-Integrated PopBar v3.04 (16th January 2009)
-For Live Servers v3.0.3.9183
+Integrated PopBar v3.05 (21st January 2009)
+For Live Servers v3.0.8.9464
 By Xinhuan
 
 Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
@@ -61,6 +61,13 @@ Credits:
 
 ===========================
 Patch Notes
+
+v3.05 (from v3.04) (21st January 2009)
+- Written for Live Servers v3.0.8.9464.
+- A bunch of secureheader stuff to workaround the loss of SecureHandlerShowHideTemplate and control:SetTimer().
+- You can no longer control hover out time. Popup bars will now disappear immediately on mouse out.
+- Delayed-close menus and action bars are now off-limits until the next patch, if even that.
+- See http://forums.worldofwarcraft.com/thread.html?topicId=8202271194&postId=144650995300&sid=1#374 post 374-380 for details.
 
 v3.04 (from v3.03) (16th January 2009)
 - Fix overlapping micro menu buttons if you zone while being in a vehicle.
