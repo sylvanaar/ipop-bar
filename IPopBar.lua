@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.04 (16th January 2009)
-	For Live Servers v3.0.3.9183
+	Integrated PopBar v3.05 (21st January 2009)
+	For Live Servers v3.0.8.9464
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -13,7 +13,7 @@ local IPopBar = IPopBar
 local L = IPopBar_Localization
 
 -- Setup the text displayed in the keybindings
-BINDING_HEADER_IPopBar			= L["IPopBar Buttons"]
+BINDING_HEADER_IPopBar = L["IPopBar Buttons"]
 for i = 0, 32 do
 	local row, col = floor(i/11)+1, i%11+1
 	_G[("BINDING_NAME_CLICK IPopBarButton%d:LeftButton"):format(i+1)] = L["IPopBar Button %d/%d"]:format(row, col)
@@ -31,7 +31,7 @@ local defaults = {
 	ShowEndCaps      = true,
 	TimeIn           = 0.2,
 	TimeOut          = 0.2,
-	Version          = 3.04,
+	Version          = 3.05,
 }
 local defaultStartIDs = {
 	WARRIOR = {
