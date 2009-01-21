@@ -102,7 +102,7 @@ IPopBarFrame.t2a:SetTexCoord(0, 0.1484375, 0.33203125, 0.5)
 
 -- The frame to show when in Bar mode.
 -- It's also our secure header that controls all our buttons
-local IPopBarFrameBar = CreateFrame("Button", "IPopBarFrameBar", MainMenuBar, "SecureHandlerEnterLeaveTemplate, SecureHandlerShowHideTemplate")
+local IPopBarFrameBar = CreateFrame("Button", "IPopBarFrameBar", MainMenuBar, "SecureHandlerEnterLeaveTemplate, SecureHandlerAttributeTemplate")
 IPopBarFrameBar:SetMovable(nil)
 IPopBarFrameBar:SetPoint("TOPLEFT", 556, 0)
 IPopBarFrameBar:SetPoint("BOTTOMRIGHT")
@@ -162,6 +162,7 @@ end
 
 -- Get button references into our secure header
 IPopBarFrameBar:Execute("Buttons = table.new(self:GetChildren())")
+IPopBarFrameBar:Execute("IPopBarFrameBar = self")
 
 -- Create our secure toggle button
 local IPopBarToggleButton = CreateFrame("Button", "IPopBarToggleButton", MainMenuBarArtFrame, "SecureHandlerClickTemplate")
@@ -169,10 +170,12 @@ IPopBarToggleButton:RegisterForClicks("LeftButtonDown")
 IPopBarToggleButton:SetFrameRef("IPopBarFrameBar", IPopBarFrameBar)
 IPopBarToggleButton:SetAttribute("_onclick", [[
 	local IPopBarFrameBar = self:GetFrameRef("IPopBarFrameBar")
-	if IPopBarFrameBar:IsShown() then
+	if IPopBarFrameBar:GetAttribute("shown") then
 		IPopBarFrameBar:Hide()
+		IPopBarFrameBar:SetAttribute("shown", false)
 	else
 		IPopBarFrameBar:Show()
+		IPopBarFrameBar:SetAttribute("shown", true)
 	end
 	control:CallMethod("UpdateButtons", true)
 ]])
@@ -362,9 +365,11 @@ function IPopBar:ShowBars(toggle)
 	if toggle == 1 then
 		db.Enabled = 1
 		IPopBarFrameBar:Show()
+		IPopBarFrameBar:SetAttribute("shown", true)
 	else
 		db.Enabled = 0
 		IPopBarFrameBar:Hide()
+		IPopBarFrameBar:SetAttribute("shown", false)
 	end
 	IPopBar:UpdateButtons()
 end
@@ -424,6 +429,25 @@ function IPopBar:ConfigureButtonHideStates()
 	if InCombatLockdown() then return end
 	local onEnter, onLeave = "", ""
 
+	local HideButtons = format("for i = 12, %d do Buttons[i]:Hide() end", db.NumRows * 11)..' IPopBarFrameBar:SetPoint("TOPLEFT", "$parent", "TOPLEFT", 556, 0)'
+	onLeave = "if not self:IsUnderMouse(true) then "..HideButtons.." end"
+	onEnter = format('for i = 12, %d do Buttons[i]:Show() end IPopBarFrameBar:SetPoint("TOPLEFT", "$parent", "TOPLEFT", 556, %d)', db.NumRows * 11, (db.NumRows - 1) * 42)
+
+	if db.NumRows > 1 then
+		IPopBarFrameBar:SetAttribute("_onattributechanged", [[
+			if name == "shown" then
+				if value then
+					if self:IsUnderMouse(true) then ]]..onEnter..[[ end
+				else ]]
+					..HideButtons..
+				[[ end
+			end
+		]])
+		--IPopBarFrameBar:SetAttribute("_onattributechanged", "SetUpAnimation(Buttons[1], 'SetAlpha', 'return elapsedFraction', 5, nil, true)")
+	else
+		IPopBarFrameBar:SetAttribute("_onattributechanged", nil)
+	end
+
 	if db.NumRows == 1 then
 		for i = 1, 11 do
 			row2[i]:Hide()
@@ -442,8 +466,6 @@ function IPopBar:ConfigureButtonHideStates()
 			row2[i]:SetAttribute("statehidden", nil)
 			row3[i]:SetAttribute("statehidden", true)
 		end
-		onEnter = "enterTime = control:GetTime() for i = 12, 22 do Buttons[i]:Show() end"
-		onLeave = format("control:SetTimer(%.1f, nil, HideAll)", db.TimeOut)
 		IPopBarFrameBar:SetAttribute("_onenter", onEnter)
 		IPopBarFrameBar:SetAttribute("_onleave", onLeave)
 		for i = 1, 33 do
@@ -459,8 +481,6 @@ function IPopBar:ConfigureButtonHideStates()
 			row2[i]:SetAttribute("statehidden", nil)
 			row3[i]:SetAttribute("statehidden", nil)
 		end
-		onEnter = "enterTime = control:GetTime() for i = 12, 33 do Buttons[i]:Show() end"
-		onLeave = format("control:SetTimer(%.1f, nil, HideAll)", db.TimeOut)
 		IPopBarFrameBar:SetAttribute("_onenter", onEnter)
 		IPopBarFrameBar:SetAttribute("_onleave", onLeave)
 		for i = 1, 33 do
@@ -471,13 +491,8 @@ function IPopBar:ConfigureButtonHideStates()
 		end
 	end
 
-	local HideButtons = format("for i = 12, %d do Buttons[i]:Hide() end", db.NumRows * 11)
-	local HideAll = format( [[HideAll = "if when - enterTime >= %.2f and not self:IsUnderMouse(true) then ]]..HideButtons..[[ end"]] , db.TimeOut - 0.01)
-	local HideIt = format("enterTime = control:GetTime() control:SetTimer(%.1f, nil, HideAll)", db.TimeOut)
-	IPopBarFrameBar:Execute(HideAll)
-	IPopBarFrameBar:Execute(HideIt)
-	IPopBarFrameBar:SetAttribute("_onshow", "if self:IsUnderMouse(true) then "..onEnter.." end")
-	IPopBarFrameBar:SetAttribute("_onhide", HideButtons)
+	IPopBarFrameBar:Execute(onEnter)
+	IPopBarFrameBar:Execute(onLeave)
 end
 
 
@@ -586,7 +601,7 @@ local function IPopBar_Help(msg, quietmode)
 			IPopBar:ConfigureButtonHideStates()
 		else
 			DEFAULT_CHAT_FRAME:AddMessage(L["Invalid time specified. It must be between 0 and 5.0."])
-		end]]
+		end
 
 	elseif string.match(msg, "^disappear ([0-9.]+)$") then
 		if InCombatLockdown() then
@@ -599,7 +614,7 @@ local function IPopBar_Help(msg, quietmode)
 			IPopBar:ConfigureButtonHideStates()
 		else
 			DEFAULT_CHAT_FRAME:AddMessage(L["Invalid time specified. It must be between 0 and 5.0."])
-		end
+		end]]
 
 	else
 		if not quietmode then
@@ -701,7 +716,7 @@ local options = {
 					set = function(info, v) IPopBar_Help("appear "..v, true) end,
 					arg = "TimeIn",
 					order = 3,
-				},]]
+				},
 				timeout = {
 					name = L["Hover out time"],
 					desc = L["The amount of time before the popbar rows disappear. Only affects combat."],
@@ -710,7 +725,7 @@ local options = {
 					set = function(info, v) IPopBar_Help("disappear "..v, true) end,
 					arg = "TimeOut",
 					order = 4,
-				},
+				},]]
 				endcaps = {
 					name = L["Show dragon end caps"],
 					desc = L["Show/hide the gryphon end caps on the main menu bar"],
