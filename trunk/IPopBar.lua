@@ -235,9 +235,11 @@ IPopBarFrameBar:SetFrameLevel(IPopBarFrameBar:GetFrameLevel() + 1)
 hooksecurefunc("UpdateTalentButton", function()
 	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then TalentMicroButton:Hide() end
 end)
-hooksecurefunc("AchievementMicroButton_Update", function()
+local HideAchievementButton = function()
 	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then AchievementMicroButton:Hide() end
-end)
+end
+hooksecurefunc("AchievementMicroButton_Update", HideAchievementButton)
+AchievementMicroButton:HookScript("OnEvent", HideAchievementButton)
 hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
 	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
 end)
