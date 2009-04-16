@@ -1,5 +1,5 @@
-Integrated PopBar v3.05 (21st January 2009)
-For Live Servers v3.0.8.9464
+Integrated PopBar v3.06 (16 April 2009)
+For Live Servers v3.1.0.9767
 By Xinhuan
 
 Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
@@ -61,6 +61,10 @@ Credits:
 
 ===========================
 Patch Notes
+
+v3.06 (from v3.05) (16 April 2009)
+- Written for Live Servers v3.1.0.9767.
+- Fix the achievement micro menu button from appearing every time you enter/leave combat.
 
 v3.05 (from v3.04) (21st January 2009)
 - Written for Live Servers v3.0.8.9464.

@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.05 (21st January 2009)
-	For Live Servers v3.0.8.9464
+	Integrated PopBar v3.06 (16 April 2009)
+	For Live Servers v3.1.0.9767
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -31,7 +31,7 @@ local defaults = {
 	ShowEndCaps      = true,
 	TimeIn           = 0.2,
 	TimeOut          = 0.2,
-	Version          = 3.05,
+	Version          = 3.06,
 }
 local defaultStartIDs = {
 	WARRIOR = {
