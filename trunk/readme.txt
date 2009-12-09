@@ -1,5 +1,5 @@
-Integrated PopBar v3.06 (16 April 2009)
-For Live Servers v3.1.0.9767
+Integrated PopBar v3.07 (9 December 2009)
+For Live Servers v3.3.0.10958
 By Xinhuan
 
 Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
@@ -61,6 +61,10 @@ Credits:
 
 ===========================
 Patch Notes
+
+v3.07 (from v3.06) (9 December 2009)
+- Written for Live Servers v3.3.0.10958.
+- Fix the errors resulting from WoW Patch 3.3.0. Blizzard did away with the conditional talent/achievement buttons, making things simpler.
 
 v3.06 (from v3.05) (16 April 2009)
 - Written for Live Servers v3.1.0.9767.

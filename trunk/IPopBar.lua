@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.06 (16 April 2009)
-	For Live Servers v3.1.0.9767
+	Integrated PopBar v3.07 (9 December 2009)
+	For Live Servers v3.3.0.10958
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -232,13 +232,9 @@ IPopBarFrame:SetFrameLevel(IPopBarFrame:GetFrameLevel() + 1)
 IPopBarFrameBar:SetFrameLevel(IPopBarFrameBar:GetFrameLevel() + 1)
 
 -- Hook Functions
---hooksecurefunc("UpdateTalentButton", function()
---	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then TalentMicroButton:Hide() end
---end)
 local HideAchievementButton = function()
 	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then AchievementMicroButton:Hide() end
 end
---hooksecurefunc("AchievementMicroButton_Update", HideAchievementButton)
 AchievementMicroButton:HookScript("OnEvent", HideAchievementButton)
 hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
 	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
@@ -410,10 +406,9 @@ function IPopBar:UpdateButtons(issecure)
 		MainMenuMicroButton:Show()
 		HelpMicroButton:Show()
 		PVPMicroButton:Show()
-		--UpdateTalentButton()
-		--AchievementMicroButton_Update()
 		TalentMicroButton:Show()
 		AchievementMicroButton:Show()
+		UpdateMicroButtons()
 
 		MainMenuBarBackpackButton:Show()
 		CharacterBag0Slot:Show()
