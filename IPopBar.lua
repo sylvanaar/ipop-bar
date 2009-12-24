@@ -232,10 +232,6 @@ IPopBarFrame:SetFrameLevel(IPopBarFrame:GetFrameLevel() + 1)
 IPopBarFrameBar:SetFrameLevel(IPopBarFrameBar:GetFrameLevel() + 1)
 
 -- Hook Functions
-local HideAchievementButton = function()
-	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then AchievementMicroButton:Hide() end
-end
-AchievementMicroButton:HookScript("OnEvent", HideAchievementButton)
 hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
 	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
 end)
