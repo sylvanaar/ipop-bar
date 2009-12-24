@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.07 (9 December 2009)
-	For Live Servers v3.3.0.10958
+	Integrated PopBar v3.08 (24 December 2009)
+	For Live Servers v3.3.0.11159
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -245,6 +245,11 @@ end)
 hooksecurefunc("MainMenuBar_UpdateArt", function(MainMenuBar)
 	IPopBar:ShowBars(db.Enabled)
 end)
+-- Stops the error on Blizzard_AchievementUI\Blizzard_AchievementUI.lua:671
+-- which calls this non-existant function if the AchievementMicroButton is hidden
+if not AchievementMicroButton_Update then
+	AchievementMicroButton_Update = function() end
+end
 
 
 ---------------------------------------------------------------------------
@@ -295,8 +300,9 @@ local function IPopBar_MigrateOldKeyBind(...)
 			SetBindingClick(key, "IPopBarToggleButton")
 		end
 	end
-	if GetCurrentBindingSet() then
-		SaveBindings(GetCurrentBindingSet())
+	local s = GetCurrentBindingSet()
+	if s == 1 or s == 2 then
+		SaveBindings(s)
 	end
 end
 

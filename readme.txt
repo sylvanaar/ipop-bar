@@ -1,5 +1,5 @@
-Integrated PopBar v3.07 (9 December 2009)
-For Live Servers v3.3.0.10958
+Integrated PopBar v3.08 (24 December 2009)
+For Live Servers v3.3.0.11159
 By Xinhuan
 
 Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
@@ -61,6 +61,11 @@ Credits:
 
 ===========================
 Patch Notes
+
+v3.08 (from v3.07) (24 December 2009)
+- Written for Live Servers v3.3.0.11159.
+- Add workaround for Blizzard_AchievementUI\Blizzard_AchievementUI.lua:671 errors.
+- Add fix for SaveBindings() error that occurs for new characters.
 
 v3.07 (from v3.06) (9 December 2009)
 - Written for Live Servers v3.3.0.10958.
