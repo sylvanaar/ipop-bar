@@ -1,5 +1,5 @@
 ## Interface: 30300
-## Title: Integrated PopBar (v3.07)
+## Title: Integrated PopBar (v3.08)
 ## Notes: An extra set of 11x3 buttons, integrated into the default action bar.
 ## Author: Xinhuan
 ## OptionalDeps: Ace3
@@ -7,7 +7,7 @@
 ## X-eMail: xinhuan @ gmail DOT com
 ## X-Category: Action Bars
 ## X-License: GPL v2
-## Version: 3.07
+## Version: 3.08
 
 Locales\Locale-enUS.lua
 Locales\Locale-deDE.lua
