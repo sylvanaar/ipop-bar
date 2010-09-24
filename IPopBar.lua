@@ -125,7 +125,9 @@ IPopBarFrameBar.bg3:SetWidth(9)
 IPopBarFrameBar.bg3:SetHeight(43)
 IPopBarFrameBar.bg3:SetPoint("BOTTOMLEFT", -6, 0)
 IPopBarFrameBar.bg3:SetTexCoord(0.0859375, 0.12109375, 0.08203125, 0.25)
-IPopBarFrameBar:SetFrameRef("SpellFlyout", SpellFlyout)
+if TOC >= 40000 then
+	IPopBarFrameBar:SetFrameRef("SpellFlyout", SpellFlyout)
+end
 
 -- Function to create one of our buttons
 local function CreateIPopBarButton(num)
