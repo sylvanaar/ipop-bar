@@ -11,6 +11,7 @@
 IPopBar = {}
 local IPopBar = IPopBar
 local L = IPopBar_Localization
+local TOC = select(4, GetBuildInfo())
 
 -- Setup the text displayed in the keybindings
 BINDING_HEADER_IPopBar = L["IPopBar Buttons"]
@@ -124,6 +125,7 @@ IPopBarFrameBar.bg3:SetWidth(9)
 IPopBarFrameBar.bg3:SetHeight(43)
 IPopBarFrameBar.bg3:SetPoint("BOTTOMLEFT", -6, 0)
 IPopBarFrameBar.bg3:SetTexCoord(0.0859375, 0.12109375, 0.08203125, 0.25)
+IPopBarFrameBar:SetFrameRef("SpellFlyout", SpellFlyout)
 
 -- Function to create one of our buttons
 local function CreateIPopBarButton(num)
@@ -318,8 +320,10 @@ local function IPopBar_OnEvent(self, event, arg1)
 		IPopBar:ShowBars(db.Enabled)
 		--if not db.ShowPageNum then MainMenuBarPageNumber:Hide() end
 		MainMenuBar:SetScale(db.Scale)
-		MultiBarBottomLeft:SetScale(db.Scale)
-		MultiBarBottomRight:SetScale(db.Scale)
+		if TOC < 40000 then
+			MultiBarBottomLeft:SetScale(db.Scale)
+			MultiBarBottomRight:SetScale(db.Scale)
+		end
 		MultiBarRight:SetScale(db.Scale)
 		MultiBarLeft:SetScale(db.Scale)
 		if not db.ShowEndCaps then
@@ -381,7 +385,11 @@ function IPopBar:UpdateButtons(issecure)
 			CharacterMicroButton:Hide()
 			SpellbookMicroButton:Hide()
 			QuestLogMicroButton:Hide()
-			SocialsMicroButton:Hide()
+			if TOC < 40000 then
+				SocialsMicroButton:Hide()
+			else
+				GuildMicroButton:Hide()
+			end
 			LFDMicroButton:Hide()
 			MainMenuMicroButton:Hide()
 			HelpMicroButton:Hide()
@@ -403,7 +411,11 @@ function IPopBar:UpdateButtons(issecure)
 		CharacterMicroButton:Show()
 		SpellbookMicroButton:Show()
 		QuestLogMicroButton:Show()
-		SocialsMicroButton:Show()
+		if TOC < 40000 then
+			SocialsMicroButton:Show()
+		else
+			GuildMicroButton:Show()
+		end
 		LFDMicroButton:Show()
 		MainMenuMicroButton:Show()
 		HelpMicroButton:Show()
@@ -431,19 +443,47 @@ function IPopBar:ConfigureButtonHideStates()
 	local onEnter, onLeave = "", ""
 
 	local HideButtons = format("for i = 12, %d do Buttons[i]:Hide() end", db.NumRows * 11)..' IPopBarFrameBar:SetPoint("TOPLEFT", "$parent", "TOPLEFT", 556, 0)'
-	onLeave = "if not self:IsUnderMouse(true) then "..HideButtons.." end"
+	if TOC < 40000 then
+		onLeave = "if not IPopBarFrameBar:IsUnderMouse(true) then "..HideButtons.." end"
+	else
+		onLeave = [[
+			if PlayerInCombat() then
+				if not IPopBarFrameBar:IsUnderMouse(true) then ]]..HideButtons..[[ end
+			else
+				local SF = IPopBarFrameBar:GetFrameRef("SpellFlyout")
+				if not (IPopBarFrameBar:IsUnderMouse(true) or (SF:IsVisible() and SF:IsUnderMouse(true))) then ]]..HideButtons..[[ end
+			end
+		]]
+	end
 	onEnter = format('for i = 12, %d do Buttons[i]:Show() end IPopBarFrameBar:SetPoint("TOPLEFT", "$parent", "TOPLEFT", 556, %d)', db.NumRows * 11, (db.NumRows - 1) * 42)
 
 	if db.NumRows > 1 then
-		IPopBarFrameBar:SetAttribute("_onattributechanged", [[
-			if name == "shown" then
-				if value then
-					if self:IsUnderMouse(true) then ]]..onEnter..[[ end
-				else ]]
-					..HideButtons..
-				[[ end
-			end
-		]])
+		if TOC < 40000 then
+			IPopBarFrameBar:SetAttribute("_onattributechanged", [[
+				if name == "shown" then
+					if value then
+						if self:IsUnderMouse(true) then ]]..onEnter..[[ end
+					else ]]
+						..HideButtons..
+					[[ end
+				end
+			]])
+		else
+			IPopBarFrameBar:SetAttribute("_onattributechanged", [[
+				if name == "shown" then
+					if value then
+						if PlayerInCombat() then
+							if self:IsUnderMouse(true) then ]]..onEnter..[[ end
+						else
+							local SF = self:GetFrameRef("SpellFlyout")
+							if self:IsUnderMouse(true) or (SF:IsVisible() and SF:IsUnderMouse(true)) then ]]..onEnter..[[ end
+						end
+					else ]]
+						..HideButtons..
+					[[ end
+				end
+			]])
+		end
 		--IPopBarFrameBar:SetAttribute("_onattributechanged", "SetUpAnimation(Buttons[1], 'SetAlpha', 'return elapsedFraction', 5, nil, true)")
 	else
 		IPopBarFrameBar:SetAttribute("_onattributechanged", nil)
@@ -491,6 +531,11 @@ function IPopBar:ConfigureButtonHideStates()
 			SecureHandlerWrapScript(allB[i], "OnLeave", IPopBarFrameBar, onLeave)
 		end
 	end
+
+	-- Doesn't work as of build 12984 because all the SpellFlyouts are not :IsProtected()
+	-- Todo, loop over all flyout buttons
+	--SecureHandlerUnwrapScript(SpellFlyoutButton1, "OnLeave")
+	--SecureHandlerWrapScript(SpellFlyoutButton1, "OnLeave", IPopBarFrameBar, onLeave)
 
 	IPopBarFrameBar:Execute(onEnter)
 	IPopBarFrameBar:Execute(onLeave)
@@ -548,8 +593,10 @@ local function IPopBar_Help(msg, quietmode)
 		if scale and scale >= 0.5 and scale <= 2 then
 			db.Scale = scale
 			MainMenuBar:SetScale(scale)
-			MultiBarBottomLeft:SetScale(scale)
-			MultiBarBottomRight:SetScale(scale)
+			if TOC < 40000 then
+				MultiBarBottomLeft:SetScale(scale)
+				MultiBarBottomRight:SetScale(scale)
+			end
 			MultiBarRight:SetScale(scale)
 			MultiBarLeft:SetScale(scale)
 		else
