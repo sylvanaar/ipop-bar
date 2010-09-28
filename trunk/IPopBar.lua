@@ -231,6 +231,18 @@ IPopBarToggleButton:SetScript("OnUpdate", function(self, elapsed)
 end)
 IPopBarToggleButton.updateInterval = 0
 
+-- Create an update frame that wraps any SpellFlyout buttons that
+-- get created during combat the moment we exit combat
+local IPopBarSpellFlyoutWrapper
+if SpellFlyout then
+	IPopBarSpellFlyoutWrapper = CreateFrame("Frame")
+	IPopBarSpellFlyoutWrapper:Hide()
+	IPopBarSpellFlyoutWrapper:SetScript("OnEvent", function(self, event)
+		IPopBar:WrapFlyoutButtons()
+		self:UnregisterEvent(event)
+	end)
+end
+
 -- Raise our frame's framelevel so that it covers the XP bar
 IPopBarFrame:SetFrameLevel(IPopBarFrame:GetFrameLevel() + 1)
 IPopBarFrameBar:SetFrameLevel(IPopBarFrameBar:GetFrameLevel() + 1)
@@ -249,6 +261,15 @@ end)
 -- which calls this non-existant function if the AchievementMicroButton is hidden
 if not AchievementMicroButton_Update then
 	AchievementMicroButton_Update = function() end
+end
+if SpellFlyout then
+	hooksecurefunc(SpellFlyout, "Toggle", function(self, flyoutID, parent, direction, distance, isActionBar)
+		if InCombatLockdown() then
+			IPopBarSpellFlyoutWrapper:RegisterEvent("PLAYER_REGEN_ENABLED")
+		else
+			IPopBar:WrapFlyoutButtons()
+		end
+	end)
 end
 
 
@@ -442,50 +463,21 @@ IPopBarToggleButton.UpdateButtons = IPopBar.UpdateButtons
 -- Configure button popup row hidestates
 function IPopBar:ConfigureButtonHideStates()
 	if InCombatLockdown() then return end
-	local onEnter, onLeave = "", ""
 
 	local HideButtons = format("for i = 12, %d do Buttons[i]:Hide() end", db.NumRows * 11)..' IPopBarFrameBar:SetPoint("TOPLEFT", "$parent", "TOPLEFT", 556, 0)'
-	if TOC < 40000 then
-		onLeave = "if not IPopBarFrameBar:IsUnderMouse(true) then "..HideButtons.." end"
-	else
-		onLeave = [[
-			if PlayerInCombat() then
-				if not IPopBarFrameBar:IsUnderMouse(true) then ]]..HideButtons..[[ end
-			else
-				local SF = IPopBarFrameBar:GetFrameRef("SpellFlyout")
-				if not (IPopBarFrameBar:IsUnderMouse(true) or (SF:IsVisible() and SF:IsUnderMouse(true))) then ]]..HideButtons..[[ end
-			end
-		]]
-	end
-	onEnter = format('for i = 12, %d do Buttons[i]:Show() end IPopBarFrameBar:SetPoint("TOPLEFT", "$parent", "TOPLEFT", 556, %d)', db.NumRows * 11, (db.NumRows - 1) * 42)
+	local onLeave = "if not IPopBarFrameBar:IsUnderMouse(true) then "..HideButtons.." end"
+	local onEnter = format('for i = 12, %d do Buttons[i]:Show() end IPopBarFrameBar:SetPoint("TOPLEFT", "$parent", "TOPLEFT", 556, %d)', db.NumRows * 11, (db.NumRows - 1) * 42)
 
 	if db.NumRows > 1 then
-		if TOC < 40000 then
-			IPopBarFrameBar:SetAttribute("_onattributechanged", [[
-				if name == "shown" then
-					if value then
-						if self:IsUnderMouse(true) then ]]..onEnter..[[ end
-					else ]]
-						..HideButtons..
-					[[ end
-				end
-			]])
-		else
-			IPopBarFrameBar:SetAttribute("_onattributechanged", [[
-				if name == "shown" then
-					if value then
-						if PlayerInCombat() then
-							if self:IsUnderMouse(true) then ]]..onEnter..[[ end
-						else
-							local SF = self:GetFrameRef("SpellFlyout")
-							if self:IsUnderMouse(true) or (SF:IsVisible() and SF:IsUnderMouse(true)) then ]]..onEnter..[[ end
-						end
-					else ]]
-						..HideButtons..
-					[[ end
-				end
-			]])
-		end
+		IPopBarFrameBar:SetAttribute("_onattributechanged", [[
+			if name == "shown" then
+				if value then
+					if self:IsUnderMouse(true) then ]]..onEnter..[[ end
+				else ]]
+					..HideButtons..
+				[[ end
+			end
+		]])
 		--IPopBarFrameBar:SetAttribute("_onattributechanged", "SetUpAnimation(Buttons[1], 'SetAlpha', 'return elapsedFraction', 5, nil, true)")
 	else
 		IPopBarFrameBar:SetAttribute("_onattributechanged", nil)
@@ -534,15 +526,57 @@ function IPopBar:ConfigureButtonHideStates()
 		end
 	end
 
-	-- Doesn't work as of build 12984 because all the SpellFlyouts are not :IsProtected()
-	-- Todo, loop over all flyout buttons
-	--SecureHandlerUnwrapScript(SpellFlyoutButton1, "OnLeave")
-	--SecureHandlerWrapScript(SpellFlyoutButton1, "OnLeave", IPopBarFrameBar, onLeave)
+	self:UnwrapFlyoutButtons()
+	self:WrapFlyoutButtons()
 
 	IPopBarFrameBar:Execute(onEnter)
 	IPopBarFrameBar:Execute(onLeave)
 end
 
+function IPopBar:WrapFlyoutButtons()
+	if InCombatLockdown() then return end
+
+	local HideButtons = format("for i = 12, %d do Buttons[i]:Hide() end", db.NumRows * 11)..' IPopBarFrameBar:SetPoint("TOPLEFT", "$parent", "TOPLEFT", 556, 0)'
+	local onLeave = "if not IPopBarFrameBar:IsUnderMouse(true) then "..HideButtons.." end"
+
+	local i = 1
+	local button = _G["SpellFlyoutButton"..i]
+	while button do
+		if not button.IPopBarWrapped then
+			SecureHandlerWrapScript(button, "OnEnter", IPopBarFrameBar, "")
+			SecureHandlerWrapScript(button, "OnLeave", IPopBarFrameBar, onLeave)
+			button.IPopBarWrapped = true
+		end
+		i = i + 1
+		button = _G["SpellFlyoutButton"..i]
+	end
+	if SpellFlyout and not SpellFlyout.IPopBarWrapped then
+		SecureHandlerWrapScript(SpellFlyout, "OnEnter", IPopBarFrameBar, "")
+		SecureHandlerWrapScript(SpellFlyout, "OnLeave", IPopBarFrameBar, onLeave)
+		SecureHandlerWrapScript(SpellFlyout, "OnHide", IPopBarFrameBar, onLeave)
+		SpellFlyout.IPopBarWrapped = true
+	end
+end
+
+function IPopBar:UnwrapFlyoutButtons()
+	if InCombatLockdown() then return end
+
+	local i = 1
+	local button = _G["SpellFlyoutButton"..i]
+	while button do
+		SecureHandlerUnwrapScript(button, "OnEnter")
+		SecureHandlerUnwrapScript(button, "OnLeave")
+		button.IPopBarWrapped = nil
+		i = i + 1
+		button = _G["SpellFlyoutButton"..i]
+	end
+	if SpellFlyout then
+		SecureHandlerUnwrapScript(SpellFlyout, "OnEnter")
+		SecureHandlerUnwrapScript(SpellFlyout, "OnLeave")
+		SecureHandlerUnwrapScript(SpellFlyout, "OnHide")
+		SpellFlyout.IPopBarWrapped = nil
+	end
+end
 
 ---------------------------------------------------------------------------
 -- Slash command function
