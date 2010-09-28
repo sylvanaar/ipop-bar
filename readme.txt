@@ -1,5 +1,5 @@
-Integrated PopBar v3.08 (24 December 2009)
-For Live Servers v3.3.0.11159
+Integrated PopBar v3.09 (28 September 2010)
+For Live Servers v3.3.5.12340 and Cataclysm Beta
 By Xinhuan
 
 Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
@@ -61,6 +61,10 @@ Credits:
 
 ===========================
 Patch Notes
+
+v3.09 (from v3.08) (28 September 2010)
+- Written for Live Servers v3.3.5.12340 and Cataclysm Beta
+- Add popbar hiding support for SpellFlyouts.
 
 v3.08 (from v3.07) (24 December 2009)
 - Written for Live Servers v3.3.0.11159.
