@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.09 (28 September 2010)
-	For Live Servers v3.3.5.12340 and Cataclysm Beta
+	Integrated PopBar v3.10 (13 October 2010)
+	For Live Servers v4.0.1.13164 and Cataclysm Beta v4.0.3.13117.
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -32,7 +32,7 @@ local defaults = {
 	ShowEndCaps      = true,
 	TimeIn           = 0.2,
 	TimeOut          = 0.2,
-	Version          = 3.06,
+	Version          = 3.10,
 }
 local defaultStartIDs = {
 	WARRIOR = {
