@@ -187,26 +187,8 @@ IPopBarToggleButton:SetPoint("CENTER", 30, -5)
 IPopBarToggleButton:SetWidth(12)
 IPopBarToggleButton:SetHeight(12)
 IPopBarToggleButton:SetScript("OnEnter", function(self, motion)
-	if SHOW_NEWBIE_TIPS == "1" then
-		GameTooltip_SetDefaultAnchor(GameTooltip, self)
-	else
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 0, 32.5)
-	end
-	GameTooltip:AddLine(MicroButtonTooltipText("IPopBar v"..defaults.Version, "CLICK IPopBarToggleButton:LeftButton"))
-
-	-- latency
-	local bandwidthIn, bandwidthOut, latency = GetNetStats()
-	GameTooltip:AddLine(format(MAINMENUBAR_LATENCY_LABEL, latency), 1.0, 1.0, 1.0)
-	if SHOW_NEWBIE_TIPS == "1" then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_LATENCY, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-	end
-
-	-- framerate
-	GameTooltip:AddLine(format(MAINMENUBAR_FPS_LABEL, GetFramerate()), 1.0, 1.0, 1.0)
-	if SHOW_NEWBIE_TIPS == "1" then
-		GameTooltip:AddLine(NEWBIE_TOOLTIP_FRAMERATE, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, 1)
-	end
-
+	self.tooltipText = MicroButtonTooltipText("IPopBar v"..defaults.Version, "CLICK IPopBarToggleButton:LeftButton")
+	MainMenuBarPerformanceBarFrame_OnEnter(self)
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L["Click to toggle IPopBar."], 1.0, 0.8, 0, 1)
 	GameTooltip:Show()
