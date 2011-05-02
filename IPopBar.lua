@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.10 (13 October 2010)
-	For Live Servers v4.0.1.13164 and Cataclysm Beta v4.0.3.13117.
+	Integrated PopBar v3.11 (2 May 2011)
+	For Live Servers v4.1.0.13914.
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
