@@ -1,5 +1,5 @@
 --[[
-	Integrated PopBar v3.11 (2 May 2011)
+	Integrated PopBar v3.12 (6 May 2011)
 	For Live Servers v4.1.0.13914.
 	By Xinhuan
 
@@ -330,7 +330,7 @@ local function IPopBar_OnEvent(self, event, arg1)
 			MultiBarBottomRight:SetScale(db.Scale)
 		end
 		MultiBarRight:SetScale(db.Scale)
-		MultiBarLeft:SetScale(db.Scale)
+		--MultiBarLeft:SetScale(db.Scale)
 		if not db.ShowEndCaps then
 			MainMenuBarLeftEndCap:Hide()
 			MainMenuBarRightEndCap:Hide()
@@ -616,7 +616,7 @@ local function IPopBar_Help(msg, quietmode)
 				MultiBarBottomRight:SetScale(scale)
 			end
 			MultiBarRight:SetScale(scale)
-			MultiBarLeft:SetScale(scale)
+			--MultiBarLeft:SetScale(scale)
 		else
 			DEFAULT_CHAT_FRAME:AddMessage(L["Invalid scale specified. It must be between 0.5 and 2.0."])
 		end
