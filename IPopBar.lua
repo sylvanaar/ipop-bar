@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.12 (6 May 2011)
-	For Live Servers v4.1.0.13914.
+	Integrated PopBar v3.13 (2 July 2011)
+	For Live Servers v4.2.0.14333.
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -230,9 +230,11 @@ IPopBarFrame:SetFrameLevel(IPopBarFrame:GetFrameLevel() + 1)
 IPopBarFrameBar:SetFrameLevel(IPopBarFrameBar:GetFrameLevel() + 1)
 
 -- Hook Functions
-hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
-	if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
-end)
+if TOC < 40200 then
+	hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
+		if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
+	end)
+end
 hooksecurefunc("VehicleMenuBar_MoveMicroButtons", function(skinName)
 	if not skinName then IPopBar:ShowBars(db.Enabled) end
 end)
@@ -401,6 +403,10 @@ function IPopBar:UpdateButtons(issecure)
 			TalentMicroButton:Hide()
 			AchievementMicroButton:Hide()
 			PVPMicroButton:Hide()
+			if TOC >= 40200 then
+				EJMicroButton:Hide()
+				RaidMicroButton:Hide()
+			end
 		end
 
 		MainMenuBarBackpackButton:Hide()
@@ -408,7 +414,9 @@ function IPopBar:UpdateButtons(issecure)
 		CharacterBag1Slot:Hide()
 		CharacterBag2Slot:Hide()
 		CharacterBag3Slot:Hide()
-		KeyRingButton:Hide()
+		if TOC < 40200 then
+			KeyRingButton:Hide()
+		end
 
 		MainMenuBarTexture2:Hide()
 		MainMenuBarTexture3:Hide()
@@ -427,6 +435,10 @@ function IPopBar:UpdateButtons(issecure)
 		PVPMicroButton:Show()
 		TalentMicroButton:Show()
 		AchievementMicroButton:Show()
+		if TOC >= 40200 then
+			EJMicroButton:Show()
+			RaidMicroButton:Show()
+		end
 		UpdateMicroButtons()
 
 		MainMenuBarBackpackButton:Show()
@@ -434,7 +446,9 @@ function IPopBar:UpdateButtons(issecure)
 		CharacterBag1Slot:Show()
 		CharacterBag2Slot:Show()
 		CharacterBag3Slot:Show()
-		MainMenuBar_UpdateKeyRing()
+		if TOC < 40200 then
+			MainMenuBar_UpdateKeyRing()
+		end
 
 		MainMenuBarTexture2:Show()
 		MainMenuBarTexture3:Show()
