@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.14 (3 December 2011)
-	For Live Servers v4.3.0.15050.
+	Integrated PopBar v3.15 (29 August 2012)
+	For Live Servers v5.0.4.16016.
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -235,16 +235,25 @@ if TOC < 40200 then
 		if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
 	end)
 end
-hooksecurefunc("VehicleMenuBar_MoveMicroButtons", function(skinName)
-	if not skinName then IPopBar:ShowBars(db.Enabled) end
-end)
-hooksecurefunc("MainMenuBar_UpdateArt", function(MainMenuBar)
-	IPopBar:ShowBars(db.Enabled)
-end)
--- Stops the error on Blizzard_AchievementUI\Blizzard_AchievementUI.lua:671
--- which calls this non-existant function if the AchievementMicroButton is hidden
-if not AchievementMicroButton_Update then
-	AchievementMicroButton_Update = function() end
+if TOC < 50001 then
+	hooksecurefunc("VehicleMenuBar_MoveMicroButtons", function(skinName)
+		if not skinName then IPopBar:ShowBars(db.Enabled) end
+	end)
+	hooksecurefunc("MainMenuBar_UpdateArt", function(MainMenuBar)
+		IPopBar:ShowBars(db.Enabled)
+	end)
+	-- Stops the error on Blizzard_AchievementUI\Blizzard_AchievementUI.lua:671
+	-- which calls this non-existant function if the AchievementMicroButton is hidden
+	if not AchievementMicroButton_Update then
+		AchievementMicroButton_Update = function() end
+	end
+else
+	OverrideActionBar:HookScript("OnShow", function(self)
+		IPopBar:ShowMicroButtons()
+	end)
+	MainMenuBar:HookScript("OnShow", function(self)
+		IPopBar:ShowBars(db.Enabled)
+	end)
 end
 if SpellFlyout then
 	hooksecurefunc(SpellFlyout, "Toggle", function(self, flyoutID, parent, direction, distance, isActionBar)
@@ -371,6 +380,57 @@ IPopBarFrame:SetScript("OnEvent", IPopBar_OnEvent)
 ---------------------------------------------------------------------------
 -- Other functions
 
+function IPopBar:ShowMicroButtons()
+	CharacterMicroButton:Show()
+	SpellbookMicroButton:Show()
+	QuestLogMicroButton:Show()
+	if TOC < 40000 then
+		SocialsMicroButton:Show()
+	else
+		GuildMicroButton:Show()
+	end
+	LFDMicroButton:Show()
+	MainMenuMicroButton:Show()
+	HelpMicroButton:Show()
+	PVPMicroButton:Show()
+	TalentMicroButton:Show()
+	AchievementMicroButton:Show()
+	if TOC >= 40200 then
+		EJMicroButton:Show()
+		if TOC < 50001 then
+			RaidMicroButton:Show()
+		else
+			CompanionsMicroButton:Show()
+		end
+	end
+	UpdateMicroButtons()
+end
+
+function IPopBar:HideMicroButtons()
+	CharacterMicroButton:Hide()
+	SpellbookMicroButton:Hide()
+	QuestLogMicroButton:Hide()
+	if TOC < 40000 then
+		SocialsMicroButton:Hide()
+	else
+		GuildMicroButton:Hide()
+	end
+	LFDMicroButton:Hide()
+	MainMenuMicroButton:Hide()
+	HelpMicroButton:Hide()
+	TalentMicroButton:Hide()
+	AchievementMicroButton:Hide()
+	PVPMicroButton:Hide()
+	if TOC >= 40200 then
+		EJMicroButton:Hide()
+		if TOC < 50001 then
+			RaidMicroButton:Hide()
+		else
+			CompanionsMicroButton:Hide()
+		end
+	end
+end
+
 function IPopBar:ShowBars(toggle)
 	if InCombatLockdown() then IPopBar:UpdateButtons() return end
 	if toggle == 1 then
@@ -388,24 +448,15 @@ end
 function IPopBar:UpdateButtons(issecure)
 	if issecure then db.Enabled = 1 - db.Enabled end
 	if db.Enabled == 1 then
-		if not VehicleMenuBar:IsShown() then
-			CharacterMicroButton:Hide()
-			SpellbookMicroButton:Hide()
-			QuestLogMicroButton:Hide()
-			if TOC < 40000 then
-				SocialsMicroButton:Hide()
-			else
-				GuildMicroButton:Hide()
+		if TOC < 50001 then
+			if not VehicleMenuBar:IsShown() then
+				IPopBar:HideMicroButtons()
 			end
-			LFDMicroButton:Hide()
-			MainMenuMicroButton:Hide()
-			HelpMicroButton:Hide()
-			TalentMicroButton:Hide()
-			AchievementMicroButton:Hide()
-			PVPMicroButton:Hide()
-			if TOC >= 40200 then
-				EJMicroButton:Hide()
-				RaidMicroButton:Hide()
+		else
+			if OverrideActionBar:IsShown() then
+				IPopBar:ShowMicroButtons()
+			else
+				IPopBar:HideMicroButtons()
 			end
 		end
 
@@ -421,26 +472,7 @@ function IPopBar:UpdateButtons(issecure)
 		MainMenuBarTexture2:Hide()
 		MainMenuBarTexture3:Hide()
 	else
-		CharacterMicroButton:Show()
-		SpellbookMicroButton:Show()
-		QuestLogMicroButton:Show()
-		if TOC < 40000 then
-			SocialsMicroButton:Show()
-		else
-			GuildMicroButton:Show()
-		end
-		LFDMicroButton:Show()
-		MainMenuMicroButton:Show()
-		HelpMicroButton:Show()
-		PVPMicroButton:Show()
-		TalentMicroButton:Show()
-		AchievementMicroButton:Show()
-		if TOC >= 40200 then
-			EJMicroButton:Show()
-			RaidMicroButton:Show()
-		end
-		UpdateMicroButtons()
-
+		IPopBar:ShowMicroButtons()
 		MainMenuBarBackpackButton:Show()
 		CharacterBag0Slot:Show()
 		CharacterBag1Slot:Show()
