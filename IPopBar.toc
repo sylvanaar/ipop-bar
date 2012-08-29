@@ -1,5 +1,5 @@
-## Interface: 40300
-## Title: Integrated PopBar (v3.14)
+## Interface: 50001
+## Title: Integrated PopBar (v3.15)
 ## Notes: An extra set of 11x3 buttons, integrated into the default action bar.
 ## Author: Xinhuan
 ## OptionalDeps: Ace3
@@ -7,13 +7,15 @@
 ## X-eMail: xinhuan @ gmail DOT com
 ## X-Category: Action Bars
 ## X-License: GPL v2
-## Version: 3.14
+## Version: 3.15
 
 Locales\Locale-enUS.lua
 Locales\Locale-deDE.lua
 Locales\Locale-esES.lua
 Locales\Locale-frFR.lua
+Locales\Locale-itIT.lua
 Locales\Locale-koKR.lua
+Locales\Locale-ptBR.lua
 Locales\Locale-ruRU.lua
 Locales\Locale-zhCN.lua
 Locales\Locale-zhTW.lua
