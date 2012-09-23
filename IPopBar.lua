@@ -235,6 +235,9 @@ if TOC < 40200 then
 		if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
 	end)
 end
+if not AchievementMicroButton_Update then
+	AchievementMicroButton_Update = function() end
+end
 if TOC < 50001 then
 	hooksecurefunc("VehicleMenuBar_MoveMicroButtons", function(skinName)
 		if not skinName then IPopBar:ShowBars(db.Enabled) end
@@ -244,9 +247,6 @@ if TOC < 50001 then
 	end)
 	-- Stops the error on Blizzard_AchievementUI\Blizzard_AchievementUI.lua:671
 	-- which calls this non-existant function if the AchievementMicroButton is hidden
-	if not AchievementMicroButton_Update then
-		AchievementMicroButton_Update = function() end
-	end
 else
 	OverrideActionBar:HookScript("OnShow", function(self)
 		IPopBar:ShowMicroButtons()
