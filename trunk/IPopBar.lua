@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.15 (29 August 2012)
-	For Live Servers v5.0.4.16016.
+	Integrated PopBar v3.16 (23 September 2012)
+	For Live Servers v5.0.5.16057.
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
