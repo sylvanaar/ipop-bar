@@ -1,5 +1,5 @@
 --[[
-	Integrated PopBar v3.16 (23 September 2012)
+	Integrated PopBar v3.17 (6 October 2012)
 	For Live Servers v5.0.5.16057.
 	By Xinhuan
 
@@ -251,6 +251,9 @@ else
 	OverrideActionBar:HookScript("OnShow", function(self)
 		IPopBar:ShowMicroButtons()
 	end)
+	PetBattleFrame:HookScript("OnShow", function(self)
+		IPopBar:ShowMicroButtons()
+	end)
 	MainMenuBar:HookScript("OnShow", function(self)
 		IPopBar:ShowBars(db.Enabled)
 	end)
@@ -453,7 +456,7 @@ function IPopBar:UpdateButtons(issecure)
 				IPopBar:HideMicroButtons()
 			end
 		else
-			if OverrideActionBar:IsShown() then
+			if OverrideActionBar:IsShown() or PetBattleFrame:IsShown() then
 				IPopBar:ShowMicroButtons()
 			else
 				IPopBar:HideMicroButtons()
