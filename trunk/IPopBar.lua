@@ -1,6 +1,6 @@
 --[[
-	Integrated PopBar v3.17 (6 October 2012)
-	For Live Servers v5.0.5.16057.
+	Integrated PopBar v3.18 (18 November 2014)
+	For Live Servers v6.0.3.19116.
 	By Xinhuan
 
 	Inspired by PopBar, this mod integrates the fundamental
@@ -267,6 +267,14 @@ if SpellFlyout then
 		end
 	end)
 end
+if TOC >= 50000 then
+	HelpMicroButton:HookScript("OnShow", function(self)
+		if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then HelpMicroButton:Hide() end
+	end)
+	StoreMicroButton:HookScript("OnShow", function(self)
+		if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then StoreMicroButton:Hide() end
+	end)
+end
 
 
 ---------------------------------------------------------------------------
@@ -395,7 +403,6 @@ function IPopBar:ShowMicroButtons()
 	LFDMicroButton:Show()
 	MainMenuMicroButton:Show()
 	HelpMicroButton:Show()
-	PVPMicroButton:Show()
 	TalentMicroButton:Show()
 	AchievementMicroButton:Show()
 	if TOC >= 40200 then
@@ -405,6 +412,12 @@ function IPopBar:ShowMicroButtons()
 		else
 			CompanionsMicroButton:Show()
 		end
+	end
+	if TOC >= 50000 then
+		EJMicroButton:Show()
+		StoreMicroButton:Show()
+	else
+		PVPMicroButton:Show()
 	end
 	UpdateMicroButtons()
 end
@@ -423,7 +436,6 @@ function IPopBar:HideMicroButtons()
 	HelpMicroButton:Hide()
 	TalentMicroButton:Hide()
 	AchievementMicroButton:Hide()
-	PVPMicroButton:Hide()
 	if TOC >= 40200 then
 		EJMicroButton:Hide()
 		if TOC < 50001 then
@@ -431,6 +443,12 @@ function IPopBar:HideMicroButtons()
 		else
 			CompanionsMicroButton:Hide()
 		end
+	end
+	if TOC >= 50000 then
+		EJMicroButton:Hide()
+		StoreMicroButton:Hide()
+	else
+		PVPMicroButton:Hide()
 	end
 end
 
