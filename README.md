@@ -12,6 +12,7 @@ Similarly, all the interface has shortcuts, L for quest log, O for guild list, C
 
 ## Commands:
 
+```
 /ipopbar : Shows help on available commands.
 /ipopbar rows X : Use X rows of buttons. X can be 1, 2 or 3.
 /ipopbar togglecombat : Automatically switch to bar mode on entering combat.
@@ -19,7 +20,7 @@ Similarly, all the interface has shortcuts, L for quest log, O for guild list, C
 /ipopbar endcaps : Show/hide the dragon end caps on the main menu bar.
 /ipopbar rowXstartID Y : Set the starting action ID of row X to action ID Y. X can be 1, 2, or 3; Y can be between 1 and 110.
 /ipopbar resetstartID : Resets the starting action IDs of all the rows to the defaults.
-
+```
 If you have Ace3 core libraries installed, then typing /ipopbar will instead open the Ace3 configuration screen for IPopBar.
 
 ## Quirks:
