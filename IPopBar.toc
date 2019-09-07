@@ -2,7 +2,7 @@
 ## Title: Integrated PopBar (v3.18)
 ## Notes: An extra set of 11x3 buttons, integrated into the default action bar.
 ## Author: Xinhuan
-## OptionalDeps: Ace3, Prat-3.0_Libraries
+## OptionalDeps: Ace3
 ## SavedVariablesPerCharacter: IPopBar_Config
 ## X-eMail: xinhuan @ gmail DOT com
 ## X-Category: Action Bars
