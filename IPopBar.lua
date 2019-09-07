@@ -327,7 +327,7 @@ local function IPopBar_MigrateOldKeyBind(...)
 --	end
 --	local s = GetCurrentBindingSet()
 --	if s == 1 or s == 2 then
---		SaveBindings(s)
+--		AttemptToSaveBindings(s)
 --	end
 end
 
@@ -809,7 +809,7 @@ do
 			SetBindingClick(key, "IPopBarButton"..info.arg)
 		end
 		-- Save the keybinds
-		SaveBindings(GetCurrentBindingSet())
+		AttemptToSaveBindings(GetCurrentBindingSet())
 	end
 end
 
@@ -978,7 +978,7 @@ local options = {
 						else
 							SetBinding(key, "IPopBarToggleButton")
 						end
-						SaveBindings(GetCurrentBindingSet())
+						AttemptToSaveBindings(GetCurrentBindingSet())
 					end,
 					order = 0,
 				}
