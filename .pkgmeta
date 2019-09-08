@@ -9,4 +9,7 @@ externals:
         tag: latest
     libraries/AceGUI-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
-        tag: latest        
+        tag: latest
+        
+tools-used:
+    - idlua  
