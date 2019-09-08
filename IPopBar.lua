@@ -8,9 +8,8 @@
 	between the Bag Buttons and 2 extra rows of buttons.
 ]]
 
-IPopBar = {}
-local IPopBar = IPopBar
-local L = IPopBar_Localization
+local IPopBar = select(2, ...)
+local L = IPopBar.Localization
 local TOC = 80000
 
 -- Setup the text displayed in the keybindings
@@ -60,7 +59,7 @@ end
 setmetatable(defaults, {__index = defaultStartIDs})
 
 -- Localize some globals
-local tinsert, tremove = tinsert, tremove
+local tinsert = tinsert
 local GameTooltip = GameTooltip
 local InCombatLockdown = InCombatLockdown
 
@@ -186,14 +185,14 @@ IPopBarToggleButton:SetAttribute("_onclick", [[
 IPopBarToggleButton:SetPoint("CENTER", 30, -5)
 IPopBarToggleButton:SetWidth(12)
 IPopBarToggleButton:SetHeight(12)
-IPopBarToggleButton:SetScript("OnEnter", function(self, motion)
+IPopBarToggleButton:SetScript("OnEnter", function(self)
 	self.tooltipText = MicroButtonTooltipText("IPopBar v"..defaults.Version, "CLICK IPopBarToggleButton:LeftButton")
 	MainMenuBarPerformanceBarFrame_OnEnter(self)
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L["Click to toggle IPopBar."], 1.0, 0.8, 0, 1)
 	GameTooltip:Show()
 end)
-IPopBarToggleButton:SetScript("OnLeave", function(self, motion)
+IPopBarToggleButton:SetScript("OnLeave", function()
 	GameTooltip:Hide()
 end)
 IPopBarToggleButton:SetScript("OnUpdate", function(self, elapsed)
@@ -201,7 +200,7 @@ IPopBarToggleButton:SetScript("OnUpdate", function(self, elapsed)
 		self.updateInterval = self.updateInterval - elapsed
 	else
 		self.updateInterval = PERFORMANCEBAR_UPDATE_INTERVAL
-		local bandwidthIn, bandwidthOut, latency = GetNetStats()
+		local _, _, latency = GetNetStats()
 		if latency > PERFORMANCEBAR_MEDIUM_LATENCY then
 			MainMenuBarPageNumber:SetTextColor(1, 0, 0)
 		elseif latency > PERFORMANCEBAR_LOW_LATENCY then
@@ -237,7 +236,7 @@ if TOC < 50001 then
 	hooksecurefunc("VehicleMenuBar_MoveMicroButtons", function(skinName)
 		if not skinName then IPopBar:ShowBars(db.Enabled) end
 	end)
-	hooksecurefunc("MainMenuBar_UpdateArt", function(MainMenuBar)
+	hooksecurefunc("MainMenuBar_UpdateArt", function(_)
 		IPopBar:ShowBars(db.Enabled)
 	end)
 	-- Stops the error on Blizzard_AchievementUI\Blizzard_AchievementUI.lua:671
@@ -248,7 +247,7 @@ else
 	end)
 end
 if SpellFlyout then
-	hooksecurefunc(SpellFlyout, "Toggle", function(self, flyoutID, parent, direction, distance, isActionBar)
+	hooksecurefunc(SpellFlyout, "Toggle", function(self)
 		if InCombatLockdown() then
 			IPopBarSpellFlyoutWrapper:RegisterEvent("PLAYER_REGEN_ENABLED")
 		else
@@ -304,14 +303,13 @@ end
 
 -- This function migrates all the keybinds from the old
 -- "TOGGLEIPOPBAR" to the new "CLICK IPopBarToggleButton:LeftButton"
-local function IPopBar_MigrateOldKeyBind(...)
+local function IPopBar_MigrateOldKeyBind()
 	-- NOP
 end
 
-local function IPopBar_OnEvent(self, event, arg1)
+local function IPopBar_OnEvent(_, event, arg1)
 	if event == "PLAYER_ENTERING_WORLD" then
 		IPopBar:UpdateButtons()
-	
 	elseif event == "ADDON_LOADED" and arg1 == "IPopBar" then
 		IPopBar_Config = IPopBar_Config or {}
 		db = IPopBar_Config
@@ -370,7 +368,7 @@ IPopBarFrame:SetScript("OnEvent", IPopBar_OnEvent)
 
 function IPopBar:ShowMicroButtons()
 	CharacterMicroButton:Show()
-	SpellbookMicroButton:Show()	
+	SpellbookMicroButton:Show()
 	WorldMapMicroButton:Show()
 	QuestLogMicroButton:Show()
 	SocialsMicroButton:Show()
@@ -381,7 +379,7 @@ function IPopBar:ShowMicroButtons()
 end
 
 function IPopBar:HideMicroButtons()
-	WorldMapMicroButton:Hide() 
+	WorldMapMicroButton:Hide()
 	CharacterMicroButton:Hide()
 	SpellbookMicroButton:Hide()
 	QuestLogMicroButton:Hide()
@@ -750,7 +748,7 @@ local options = {
 					desc = L["Number of rows of buttons to use"],
 					type = "range",
 					min = 1, max = 3, step = 1,
-					set = function(info, v) IPopBar_Help("rows "..v, true) end,
+					set = function(_, v) IPopBar_Help("rows "..v, true) end,
 					arg = "NumRows",
 					order = 1,
 				},
@@ -759,7 +757,7 @@ local options = {
 					desc = L["The scale of the main menu bar and side bars."],
 					type = "range",
 					min = 0.5, max = 2, step = 0.01,
-					set = function(info, v) IPopBar_Help("scale "..v, true) end,
+					set = function(_, v) IPopBar_Help("scale "..v, true) end,
 					arg = "Scale",
 					order = 2,
 				},
@@ -785,7 +783,7 @@ local options = {
 					name = L["Show dragon end caps"],
 					desc = L["Show/hide the gryphon end caps on the main menu bar"],
 					type = "toggle",
-					set = function(info, v) IPopBar_Help("endcaps", true) end,
+					set = function(_, _) IPopBar_Help("endcaps", true) end,
 					arg = "ShowEndCaps",
 					width = "double",
 					order = 5,
@@ -803,7 +801,7 @@ local options = {
 					name = L["Auto-switch to bar mode on combat"],
 					desc = L["Automatically switch IPopBar to bar mode on entering combat"],
 					type = "toggle",
-					set = function(info, v) IPopBar_Help("togglecombat", true) end,
+					set = function(_, _) IPopBar_Help("togglecombat", true) end,
 					arg = "AutoToggleCombat",
 					width = "double",
 					order = 7,
@@ -815,7 +813,7 @@ local options = {
 			desc = L["Advanced"],
 			type = "group",
 			order = 2,
-			get = function(info) return allB[(info.arg - 1) * 11 + 1]:GetAttribute("action", id) end,
+			get = function(info) return allB[(info.arg - 1) * 11 + 1]:GetAttribute("action") end,
 			set = function(info, v) IPopBar_Help(("row%dstartID %d"):format(info.arg, v), true) end,
 			args = {
 				desc = {
@@ -854,7 +852,7 @@ local options = {
 					name = L["Reset to defaults"],
 					desc = L["Reset the actionIDs to default values"],
 					type = "execute",
-					func = function(info) IPopBar_Help("resetstartID") end,
+					func = function(_) IPopBar_Help("resetstartID") end,
 					order = 4,
 				},
 				info = {
@@ -885,10 +883,10 @@ local options = {
 					name = L["Toggle Menu Bar/IPopBar"],
 					desc = L["Toggle Menu Bar/IPopBar"],
 					type = "keybinding",
-					get = function(info)
+					get = function(_)
 						return table.concat(KeybindHelper:MakeKeyBindingTable(GetBindingKey("IPopBarToggleButton")), ", ")
 					end,
-					set = function(info, key)
+					set = function(_, key)
 						if key == "" then
 							local t = KeybindHelper:MakeKeyBindingTable(GetBindingKey("IPopBarToggleButton"))
 							for i = 1, #t do

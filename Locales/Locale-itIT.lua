@@ -1,7 +1,7 @@
 ﻿-- IPopBar
 -- itIT Localization file
 -- Note: The english localization file must be loaded before this file.
-
+local IPopBar = select(2, ...)
 if ( GetLocale() ~= "itIT" ) then return end
 local L = {}
 
@@ -21,6 +21,6 @@ for k, v in pairs(L) do
 end
 
 -- Set the english table as the base lookup table
-IPopBar_Localization = setmetatable(L, {__index = IPopBar_Localization})
+IPopBar.Localization = setmetatable(L, {__index = IPopBar.Localization})
 
 -- vim: ts=4 noexpandtab

@@ -1,8 +1,10 @@
 ﻿-- IPopBar
 -- enUS and enGB Localization file
 
-IPopBar_Localization = {}
-local L = IPopBar_Localization
+local IPopBar = select(2, ...)
+
+IPopBar.Localization = {}
+local L = IPopBar.Localization
 
 
 -- Name (short and long) and version of the addon
@@ -86,11 +88,11 @@ ActionBar page 1 Moonkin Form: Action ID 109 to 120
 
 |cFFFFFFFFRogue Bonus Action Bars|r
 
-ActionBar page 1 Stealth: Action ID 73 to 84 
+ActionBar page 1 Stealth: Action ID 73 to 84
 
 |cFFFFFFFFPriest Bonus Action Bars|r
 
-ActionBar page 1 Shadowform: Action ID 73 to 84 
+ActionBar page 1 Shadowform: Action ID 73 to 84
 ]]
 
 -- Convert the "true" entries to the same as the key
@@ -100,7 +102,7 @@ for k, v in pairs(L) do
 	end
 end
 
-setmetatable(IPopBar_Localization, {
+setmetatable(IPopBar.Localization, {
 	__index = function(self, key)
 		geterrorhandler()("Non-critical error: '"..key.."' is not defined in the IPopBar localization tables.")
 		self[key] = key

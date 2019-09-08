@@ -2,6 +2,7 @@
 -- zhCN Localization file
 -- Note: The english localization file must be loaded before this file.
 --这是一个测试版本的本地化文件..还有诸多未能完善的地方
+local IPopBar = select(2, ...)
 if ( GetLocale() ~= "zhCN" ) then return end
 local L = {}
 
@@ -86,11 +87,11 @@ ActionBar page 1 Moonkin Form: Action ID 109 to 120
 
 |cFFFFFFFFRogue Bonus Action Bars|r
 
-ActionBar page 1 Stealth: Action ID 73 to 84 
+ActionBar page 1 Stealth: Action ID 73 to 84
 
 |cFFFFFFFFPriest Bonus Action Bars|r
 
-ActionBar page 1 Shadowform: Action ID 73 to 84 
+ActionBar page 1 Shadowform: Action ID 73 to 84
 ]]
 
 -- Convert the "true" entries to the same as the key
@@ -101,6 +102,6 @@ for k, v in pairs(L) do
 end
 
 -- Set the english table as the base lookup table
-IPopBar_Localization = setmetatable(L, {__index = IPopBar_Localization})
+IPopBar.Localization = setmetatable(L, {__index = IPopBar.Localization})
 
 -- vim: ts=4 noexpandtab
