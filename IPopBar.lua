@@ -230,11 +230,6 @@ IPopBarFrame:SetFrameLevel(IPopBarFrame:GetFrameLevel() + 1)
 IPopBarFrameBar:SetFrameLevel(IPopBarFrameBar:GetFrameLevel() + 1)
 
 -- Hook Functions
---if TOC < 40200 then
---	hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
---		if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then KeyRingButton:Hide() end
---	end)
---end
 if not AchievementMicroButton_Update then
 	AchievementMicroButton_Update = function() end
 end
@@ -248,12 +243,6 @@ if TOC < 50001 then
 	-- Stops the error on Blizzard_AchievementUI\Blizzard_AchievementUI.lua:671
 	-- which calls this non-existant function if the AchievementMicroButton is hidden
 else
---	OverrideActionBar:HookScript("OnShow", function(self)
---		IPopBar:ShowMicroButtons()
---	end)
---	PetBattleFrame:HookScript("OnShow", function(self)
---		IPopBar:ShowMicroButtons()
---	end)
 	MainMenuBar:HookScript("OnShow", function(self)
 		IPopBar:ShowBars(db.Enabled)
 	end)
@@ -271,9 +260,6 @@ if TOC >= 50000 then
 	HelpMicroButton:HookScript("OnShow", function(self)
 		if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then HelpMicroButton:Hide() end
 	end)
---	StoreMicroButton:HookScript("OnShow", function(self)
---		if db.Enabled == 1 and IPopBarFrameBar:IsVisible() then StoreMicroButton:Hide() end
---	end)
 end
 
 
@@ -319,16 +305,7 @@ end
 -- This function migrates all the keybinds from the old
 -- "TOGGLEIPOPBAR" to the new "CLICK IPopBarToggleButton:LeftButton"
 local function IPopBar_MigrateOldKeyBind(...)
---	for i = 1, select("#", ...) do
---		local key = select(i, ...)
---		if key ~= "" then
---			SetBindingClick(key, "IPopBarToggleButton")
---		end
---	end
---	local s = GetCurrentBindingSet()
---	if s == 1 or s == 2 then
---		AttemptToSaveBindings(s)
---	end
+	-- NOP
 end
 
 local function IPopBar_OnEvent(self, event, arg1)
@@ -396,30 +373,10 @@ function IPopBar:ShowMicroButtons()
 	SpellbookMicroButton:Show()	
 	WorldMapMicroButton:Show()
 	QuestLogMicroButton:Show()
---	if TOC < 40000 then
-		SocialsMicroButton:Show()
---	else
---		GuildMicroButton:Show()
---	end
---	LFDMicroButton:Show()
+	SocialsMicroButton:Show()
 	MainMenuMicroButton:Show()
 	HelpMicroButton:Show()
 	TalentMicroButton:Show()
---	AchievementMicroButton:Show()
---	if TOC >= 40200 then
---		EJMicroButton:Show()
---		if TOC < 50001 then
---			RaidMicroButton:Show()
---		else
---			CompanionsMicroButton:Show()
---		end
---	end
---	if TOC >= 50000 then
---		EJMicroButton:Show()
---		StoreMicroButton:Show()
---	else
---		PVPMicroButton:Show()
---	end
 	UpdateMicroButtons()
 end
 
@@ -428,30 +385,10 @@ function IPopBar:HideMicroButtons()
 	CharacterMicroButton:Hide()
 	SpellbookMicroButton:Hide()
 	QuestLogMicroButton:Hide()
---	if TOC < 40000 then
-		SocialsMicroButton:Hide()
---	else
---		GuildMicroButton:Hide()
---	end
---	LFDMicroButton:Hide()
+	SocialsMicroButton:Hide()
 	MainMenuMicroButton:Hide()
 	HelpMicroButton:Hide()
 	TalentMicroButton:Hide()
---	AchievementMicroButton:Hide()
---	if TOC >= 40200 then
---		EJMicroButton:Hide()
---		if TOC < 50001 then
---			RaidMicroButton:Hide()
---		else
---			CompanionsMicroButton:Hide()
---		end
---	end
---	if TOC >= 50000 then
---		EJMicroButton:Hide()
---		StoreMicroButton:Hide()
---	else
---		PVPMicroButton:Hide()
---	end
 end
 
 function IPopBar:ShowBars(toggle)
@@ -472,26 +409,11 @@ function IPopBar:UpdateButtons(issecure)
 	if issecure then db.Enabled = 1 - db.Enabled end
 	if db.Enabled == 1 then
 		IPopBar:HideMicroButtons()
---		if TOC < 50001 then
---			if not VehicleMenuBar:IsShown() then
---				IPopBar:HideMicroButtons()
---			end
---		else
---			if OverrideActionBar:IsShown() or PetBattleFrame:IsShown() then
---				IPopBar:ShowMicroButtons()
---			else
---				IPopBar:HideMicroButtons()
---			end
---		end
-
 		MainMenuBarBackpackButton:Hide()
 		CharacterBag0Slot:Hide()
 		CharacterBag1Slot:Hide()
 		CharacterBag2Slot:Hide()
 		CharacterBag3Slot:Hide()
-		if TOC < 40200 then
-			KeyRingButton:Hide()
-		end
 
 		MainMenuBarTexture2:Hide()
 		MainMenuBarTexture3:Hide()
@@ -502,9 +424,6 @@ function IPopBar:UpdateButtons(issecure)
 		CharacterBag1Slot:Show()
 		CharacterBag2Slot:Show()
 		CharacterBag3Slot:Show()
-		if TOC < 40200 then
-			MainMenuBar_UpdateKeyRing()
-		end
 
 		MainMenuBarTexture2:Show()
 		MainMenuBarTexture3:Show()
