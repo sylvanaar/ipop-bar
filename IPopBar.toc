@@ -5,13 +5,14 @@
 
 ## Title: Integrated PopBar (v@project-version@)
 ## Notes: An extra set of 11x3 buttons, integrated into the default action bar.
-## Author: Xinhuan
+## Author: Xinhuan, Sylvanaar
 ## OptionalDeps: Ace3
 ## SavedVariablesPerCharacter: IPopBar_Config
-## X-eMail: xinhuan @ gmail DOT com
 ## X-Category: Action Bars
 ## X-License: GPL v2
 ## Version: @project-version@
+
+libraries\includes.xml
 
 Locales\Locale-enUS.lua
 Locales\Locale-deDE.lua
