@@ -1,6 +1,8 @@
 [![Build Status](https://travis-ci.org/sylvanaar/ipop-bar.svg?branch=master)](https://travis-ci.org/sylvanaar/ipop-bar)
 ![License](https://img.shields.io/github/license/sylvanaar/ipop-bar)
 
+![Wide Logo](https://cdn-wow.mmoui.com/preview/pvw71866.png)
+
 # ipop-bar
 Inspired by PopBar, this mod integrates the fundamental aspect of PopBar into the menu bar itself, toggleable between the Bag Buttons and 3 extra rows of buttons.
 
