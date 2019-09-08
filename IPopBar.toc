@@ -3,7 +3,7 @@
 ## X-Curse-Project-ID: 340671
 ## X-WoWI-ID: 25267
 
-## Title: Integrated PopBar (v@project-version@)
+## Title: Integrated PopBar
 ## Notes: An extra set of 11x3 buttons, integrated into the default action bar.
 ## Author: Xinhuan, Sylvanaar
 ## OptionalDeps: Ace3
