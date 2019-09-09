@@ -938,3 +938,12 @@ SlashCmdList["IPOPBARHELP"] = function(msg)
 		IPopBar_Help(msg)
 	end
 end
+
+
+local acreg = LibStub("AceConfigRegistry-3.0")
+acreg:RegisterOptionsTable("IPopBar", options)
+
+local acdia = LibStub("AceConfigDialog-3.0")
+acdia:AddToBlizOptions("IPopBar", L["IPopBar"])
+isRegisteredWithAce3 = true
+
